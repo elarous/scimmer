@@ -6,10 +6,17 @@
             [clj-http.client :as http]
             [clojure.data.json :as json]))
 
+;; TODO: this should be in an env variable
+(def base-url "http://localhost:3000/integration_users/")
+
+(defn get-user [{:keys [id]}]
+  (-> (http/get (str base-url id))
+      (get :body)
+      (json/read-str :key-fn keyword)))
 
 (comment
+  (get-user {:id 1659})
   (def url "http://localhost:3000/integration_users")
-
   (def users (-> (http/get url)
                  (get :body)
                  (json/read-str :key-fn keyword)))

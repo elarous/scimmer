@@ -9,9 +9,9 @@
             [malli.transform :as mt]
             [malli.transform :as mt]))
 
-(def mapping (-> (io/resource "mapping.edn")
-                 slurp
-                 (edn/read-string)))
+#_(def mapping (-> (io/resource "mapping.edn")
+                   slurp
+                   (edn/read-string)))
 
 (defn- vec->map [v]
   (->> (map-indexed #(vector %1 %2) v)
@@ -120,9 +120,6 @@
     @paths))
 
 
-
-(def user-entity (:user entities))
-
 (defn path-in-mapping [mapping attr]
   (some #(and (some #{attr} %) %) (keys-in mapping)))
 
@@ -139,12 +136,12 @@
                (get :value)))
       (get resource attr-in-mapping))))
 
-(some #{:userName} [:use :userName])
-(lookup-map-2 mapping)
+(comment
+  (some #{:userName} [:use :userName])
+  (lookup-map-2 mapping)
 
-(attr-val :user (:user entities) mapping :emails :many? true :type "personal")
-(attr-val :user (:user entities) mapping :id)
-
+  (attr-val :user (:user entities) mapping :emails :many? true :type "personal")
+  (attr-val :user (:user entities) mapping :id))
 
 ;;
 (defn extra-key-from-path [paths]

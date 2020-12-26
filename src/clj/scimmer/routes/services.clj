@@ -57,8 +57,8 @@
      ["/users/:id" {:get   users/get-user
                     :patch users/update-user}]
 
-     ["/users" {:get  users/get-users
-                :post users/create-user}]]]
+     #_["/users" {:get  users/get-users
+                  :post users/create-user}]]]
 
 
    ["/ping"
