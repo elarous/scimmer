@@ -56,10 +56,8 @@
     ["/v2"
      ["/users/:id" {:get   users/get-user
                     :patch users/update-user}]
-
-     #_["/users" {:get  users/get-users
-                  :post users/create-user}]]]
-
+     ["/users" {:get  users/get-users
+                #_:post #_users/create-user}]]]
 
    ["/ping"
     {:get ping-handler}]

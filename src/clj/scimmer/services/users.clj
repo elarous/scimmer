@@ -7,15 +7,18 @@
             [scimmer.services.persistance :as p]
             [scimmer.services.resource :as resource]))
 
-
-(defn get-users [request]
-  (ok {:users []}))
+;; helpers
+(def entities->user-resource
+  (partial resource/build-resource (mu/to-map-syntax sch/user-schema)))
+;;
 
 (defn get-user [{:keys [path-params]}]
-  (let [entities (p/get-user {:id (:id path-params)})
-        rs (resource/build-resource
-             (mu/to-map-syntax sch/user-schema) entities)]
-    (ok rs)))
+  (let [entities (p/get-user {:id (:id path-params)})]
+    (ok (entities->user-resource entities))))
+
+(defn get-users [_request]
+  (let [entities-list (p/get-users)]
+    (ok (map entities->user-resource entities-list))))
 
 (defn create-user [{:keys [body-params]}]
   (let [entities-maps (m/map-resource->entities body-params {})]
@@ -29,6 +32,7 @@
     {:message "ok"}))
 
 (comment
+  (get-user {:path-params {:id 1659}})
   (def my-data {:data "name"})
   (meta m/mapping)
 

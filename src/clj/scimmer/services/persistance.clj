@@ -14,7 +14,13 @@
       (get :body)
       (json/read-str :key-fn keyword)))
 
+(defn get-users []
+  (-> (http/get base-url)
+      (get :body)
+      (json/read-str :key-fn keyword)))
+
 (comment
+  (get-users)
   (get-user {:id 1659})
   (def url "http://localhost:3000/integration_users")
   (def users (-> (http/get url)
@@ -34,24 +40,7 @@
   :ok)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 (defn insert-resources! [resources])
-
-
 
 (comment
   (defn run [query]
