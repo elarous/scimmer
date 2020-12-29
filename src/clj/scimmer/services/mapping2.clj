@@ -5,10 +5,10 @@
             [scimmer.services.resource :as res]))
 
 (defn keyword->name [ns-k]
-  (-> ns-k name keyword))
+  (some-> ns-k name keyword))
 
 (defn keyword->ns [ns-k]
-  (-> ns-k namespace keyword))
+  (some-> ns-k namespace keyword))
 ;;
 
 (defn build-dispatch [element resource lookup-path result opts]
@@ -33,7 +33,10 @@
     (let [key (get props ::sch/mapping)
           lookup-path (if in-vec? lookup-path (conj lookup-path name))
           full-path [(keyword->ns key) (keyword->name key)]]
-      (assoc-in result full-path (get-in resource lookup-path)))))
+      ;; Only assign attributes with a mapping namespaced keyword
+      (if key
+        (assoc-in result full-path (get-in resource lookup-path))
+        result))))
 
 (defmethod build-resource :map-no-name [contents resource lookup-path result {:keys [in-vec?] :as opts}]
   (loop [children (:children contents)
@@ -78,12 +81,11 @@
 
 ;;
 (comment
-  (def entities (build-resource (mu/to-map-syntax sch/full-user) user [] {:user {:age 22}} {}))
-  (def user2 (res/build-resource (mu/to-map-syntax sch/full-user) entities))
-  (def entities2 (build-resource (mu/to-map-syntax sch/full-user) user2 [] {:user {:age 22}} {}))
+  (build-resource (mu/to-map-syntax sch/full-user) user [] {:user {:age 22}} {})
+  (build-resource (mu/to-map-syntax sch/user-schema) user [] {:user {:age 22}} {})
 
   (def user
-    {:id           #uuid "0ea136ad-061d-45f1-8d92-db5627a156f2"
+    {:id           "0ea136ad-061d-45f1-8d92-db5627a156f2"
      :externalId   "8a61fbf4-543c-4ed2-94a4-74838d6ba8ef"
      :userName     "karim"
      :locale       "en"

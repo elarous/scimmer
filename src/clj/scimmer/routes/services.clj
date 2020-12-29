@@ -57,7 +57,7 @@
      ["/users/:id" {:get   users/get-user
                     :patch users/update-user}]
      ["/users" {:get  users/get-users
-                #_:post #_users/create-user}]]]
+                :post users/create-user}]]]
 
    ["/ping"
     {:get ping-handler}]

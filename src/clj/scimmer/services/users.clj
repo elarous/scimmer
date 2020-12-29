@@ -2,7 +2,7 @@
   (:require [ring.util.http-response :refer :all]
             [clojure.pprint :as pp]
             [malli.util :as mu]
-            [scimmer.services.mapping :as m]
+            [scimmer.services.mapping2 :as mapping]
             [scimmer.services.schema :as sch]
             [scimmer.services.persistance :as p]
             [scimmer.services.resource :as resource]))
@@ -10,6 +10,9 @@
 ;; helpers
 (def entities->user-resource
   (partial resource/build-resource (mu/to-map-syntax sch/user-schema)))
+
+(def user-resource->entities
+  (partial mapping/build-resource (mu/to-map-syntax sch/user-schema)))
 ;;
 
 (defn get-user [{:keys [path-params]}]
@@ -21,8 +24,9 @@
     (ok (map entities->user-resource entities-list))))
 
 (defn create-user [{:keys [body-params]}]
-  (let [entities-maps (m/map-resource->entities body-params {})]
-    (ok (p/insert-resources! entities-maps))))
+  (let [entities-maps (user-resource->entities body-params [] {} {})
+        saved-entities (p/create-user entities-maps)]
+    (ok (entities->user-resource saved-entities))))
 
 ;; TODO: this needs the resource (user + other kinds) to be retrievable from the database so that we can apply patch updates on it
 (defn update-user [{:keys [path-params body-params]}]
@@ -32,11 +36,10 @@
     {:message "ok"}))
 
 (comment
+  (user-resource->entities user [] {} {})
   (get-user {:path-params {:id 1659}})
   (def my-data {:data "name"})
   (meta m/mapping)
-
-
   (sch/malli->scim-patch sch/full-user)
   (sch/malli->scim-patch sch/enterprise-ext)
   (sch/malli->scim-patch sch/user-schema))

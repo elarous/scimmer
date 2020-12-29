@@ -19,7 +19,15 @@
       (get :body)
       (json/read-str :key-fn keyword)))
 
+(defn create-user [resource]
+  (some-> (http/post base-url {:body         (json/write-str resource)
+                               :content-type :json})
+          (get :body)
+          (json/read-str :key-fn keyword)))
+
+
 (comment
+  (create-user {})
   (get-users)
   (get-user {:id 1659})
   (def url "http://localhost:3000/integration_users")

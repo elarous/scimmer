@@ -36,7 +36,7 @@
                   [:value {::mapping :profile/mobile_number} string?]]]]]]])
 
 (def enterprise-ext
-  [:map {:extension "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"}
+  [:map {:extension :urn:ietf:params:scim:schemas:extension:enterprise:2.0:User}
    [:employeeNumber {::mapping :custom_fields/employee_number} string?]
    [:costCenter string?]
    [:organization {::mapping :custom_fields/organization} string?]
@@ -49,7 +49,7 @@
      [:displayName string?]]]])
 
 (def javelo-ext
-  [:map {:extension "urn:ietf:params:scim:schemas:extension:javelo:2.0:User"}
+  [:map {:extension :urn:ietf:params:scim:schemas:extension:javelo:2.0:User}
    [:managerUserName {::mapping :user/manager_username} string?]
    [:status {::mapping :custom_fields/status} string?]
    [:grade {::mapping :custom_fields/grade} string?]
