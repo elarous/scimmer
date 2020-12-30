@@ -1,5 +1,6 @@
 (ns scimmer.services.schema
-  (:require [malli.core :as m]))
+  (:require [malli.core :as m]
+            [malli.util :as mu]))
 
 ;; schemas
 (def full-user
@@ -76,26 +77,5 @@
 (def user-schema (-> full-user
                      (include-extension enterprise-ext)
                      (include-extension javelo-ext)))
-;; transformations
-(defn- symbol->keyword [schema]
-  (let [fn-str (name (m/-form schema))]
-    (keyword (subs fn-str 0 (-> fn-str count dec)))))
 
-(defn malli->scim-patch [schema]
-  (let [result (atom {})]
-    (m/walk schema
-            (fn [schema path _children _b]
-              (let [cleaned-path (vec (remove #{:malli.core/in} path))
-                    full-path (if (> (count cleaned-path) 1)
-                                (-> (interpose [:type :attributes] cleaned-path) flatten vec)
-                                cleaned-path)
-                    multi-valued-path (when (some #{:malli.core/in} path)
-                                        (->> path (take-while #(not (#{:malli.core/in} %))) vec))
-                    r (cond-> @result
-                              (nil? (get-in @result full-path)) (assoc-in full-path {:type schema})
-                              (symbol? (m/-form schema)) (assoc-in full-path (symbol->keyword schema))
-                              multi-valued-path (assoc-in (conj multi-valued-path :multi-valued) true))]
-                (reset! result r))))
-    {:attributes @result}))
-
-(comment)
+(def user-schema-map (mu/to-map-syntax user-schema))
