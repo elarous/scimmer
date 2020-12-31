@@ -20,35 +20,16 @@
       (json/read-str :key-fn keyword)))
 
 (defn create-user [resource]
-  (some-> (http/post base-url {:body         (json/write-str resource)
-                               :content-type :json})
-          (get :body)
-          (json/read-str :key-fn keyword)))
+  (-> (http/post base-url
+                 {:body (json/write-str resource) :content-type :json})
+      (get :body)
+      (json/read-str :key-fn keyword)))
 
-
-(comment
-  (create-user {})
-  (get-users)
-  (get-user {:id 1659})
-  (def url "http://localhost:3000/integration_users")
-  (def users (-> (http/get url)
-                 (get :body)
-                 (json/read-str :key-fn keyword)))
-
-  (-> (map :name (:users users))
-      count)
-
-  (defn- get-user
-    [id]
-    (let [user (http/get (str url "/" id))]
-      (-> (:body user)
-          (json/read-str :key-fn keyword))))
-
-  (get-user 1659)
-  :ok)
-
-
-(defn insert-resources! [resources])
+(defn update-user [id resource]
+  (-> (http/put (str base-url id)
+                {:body (json/write-str resource) :content-type :json})
+      (get :body)
+      (json/read-str :key-fn keyword)))
 
 (comment
   (defn run [query]

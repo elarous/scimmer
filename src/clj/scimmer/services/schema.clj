@@ -23,8 +23,8 @@
       [:work [:map
               [:type [:= :work]]
               [:value {::mapping :user/email}  string?]]]
-      #_[:mobile [:map
-                  [:type [:= :mobile]]
+      [:personal [:map
+                  [:type [:= :personal]]
                   [:value {::mapping :custom_fields/email_personal} string?]]]]]]
    [:phoneNumbers
     [:vector
@@ -32,9 +32,9 @@
       [:work [:map
               [:type [:= :work]]
               [:value {::mapping :custom_fields/phone_number}  string?]]]
-      #_[:mobile [:map
-                  [:type [:= :mobile]]
-                  [:value {::mapping :profile/mobile_number} string?]]]]]]])
+      [:mobile [:map
+                [:type [:= :mobile]]
+                [:value {::mapping :custom_fields/mobile_number} string?]]]]]]])
 
 (def enterprise-ext
   [:map {:extension :urn:ietf:params:scim:schemas:extension:enterprise:2.0:User}

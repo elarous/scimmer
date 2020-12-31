@@ -1,201 +1,99 @@
 (ns scimmer.services.mapping
-  (:require [clojure.java.io :as io]
-            [clojure.edn :as edn]
-            [clojure.walk :as walk]
-            [malli.generator :as mg]
-            [scimmer.services.schema :as sch]
-            [malli.core :as m]
+  (:require [scimmer.services.schema :as sch]
+            [malli.provider :as mp]
             [malli.util :as mu]
-            [malli.transform :as mt]
-            [malli.transform :as mt]))
+            [scimmer.services.resource :as res]))
 
-#_(def mapping (-> (io/resource "mapping.edn")
-                   slurp
-                   (edn/read-string)))
+(defn keyword->name [ns-k]
+  (some-> ns-k name keyword))
 
-(defn- vec->map [v]
-  (->> (map-indexed #(vector %1 %2) v)
-       (reduce conj {})))
+(defn keyword->ns [ns-k]
+  (some-> ns-k namespace keyword))
+;;
 
-(defn keys-in
-  "taken from based on example from: https://dnaeon.github.io/clojure-map-ks-paths/ with minor modifications"
-  [m]
-  (letfn [(children [node]
-            (let [v (get-in m node)]
-              (cond
-                (map? v)
-                (map (fn [x] (conj node x)) (keys v))
-                (vector? v)
-                (map (fn [x] (conj node x)) (keys (vec->map v)))
-                :else [])))
-          (branch? [node] (-> (children node) seq boolean))]
-    (->> (keys m)
-         (map vector)
-         (mapcat #(tree-seq branch? children %)))))
-
-(defn lookup-map [mapping]
-  (->> (map (fn [v] [v (get-in mapping v)]) (keys-in mapping))
-       (remove (fn [[k v]] (or (boolean? v) (string? v) (map? v) (vector? v))))
-       (map (fn [[k v]] [v k]))
-       (reduce conj {})))
-
-(defn lookup-map-2 [mapping]
-  (->> (map (fn [v] [v (get-in mapping v)]) (keys-in mapping))
-       (remove (fn [[k v]] (or (boolean? v) (string? v) (map? v) (vector? v))))
-       (into {})))
-
-(defn extra-values [object lookup]
-  (->> (map (fn [[k path]] [k (get-in object path)]) lookup)
-       (reduce conj {})))
-
-(defn object+mapping->entity [object mapping]
-  (extra-values object (lookup-map mapping)))
-
-;; public api
-(defn map-resource->entities [resource mappings]
-  (->> mappings
-       (map (fn [[entity mapping]] (hash-map entity (object+mapping->entity resource mapping))))
-       (reduce conj {})))
-
-;; experimental
-(defn- get-vals
-  "Get the values of maps recursively"
-  [m]
+(defn build-dispatch [element resource lookup-path result opts]
   (cond
-    (map? m) (map (fn [[_ v]] (get-vals v)) m)
-    (sequential? m) (map get-vals m)
-    :else m))
+    (and (vector? element) (first element))
+    (case (:type (-> element next next first))
+      :map :map
+      :vector :vector
+      := :=
+      :attr)
+    (map? element)
+    (case (:type element)
+      :map :map-no-name
+      :multi :multi-no-name
+      :attr-no-name)))
 
-(defn mappings->columns [mappings]
-  (->>
-    (map (fn [[entity ms]]
-           [entity (->> (get-vals ms)
-                        (flatten)
-                        (filter keyword?)
-                        (vec))]) mappings)
-    (into {})))
+(defmulti build-resource #'build-dispatch)
+
+(defmethod build-resource :attr [[name props contents] resource lookup-path result {:keys [in-vec?]}]
+  (if (:children contents)
+    (map #(build-resource % resource) (:children contents))
+    (let [key (get props ::sch/mapping)
+          lookup-path (if in-vec? lookup-path (conj lookup-path name))
+          full-path [(keyword->ns key) (keyword->name key)]]
+      ;; Only assign attributes with a mapping namespaced keyword
+      (if key
+        (assoc-in result full-path (get-in resource lookup-path))
+        result))))
+
+(defmethod build-resource :map-no-name [contents resource lookup-path result {:keys [in-vec?] :as opts}]
+  (loop [children (:children contents)
+         result result]
+    (if (empty? children)
+      result
+      (recur (rest children)
+             (merge-with into result
+                         (build-resource (first children) resource lookup-path result opts))))))
+
+(defmethod build-resource :map [[name props contents] resource lookup-path result {:keys [in-vec?] :as opts}]
+  (let [path (conj lookup-path (if in-vec? :value name))]
+    (loop [children (:children contents)
+           result result]
+      (if (empty? children)
+        result
+        (recur (rest children)
+               (merge-with into result
+                           (build-resource (first children) resource path result opts)))))))
+
+(defmethod build-resource :vector [[name props contents] resource lookup-path result opts]
+  (let [children-result
+        (build-resource (-> contents :children first)
+                        resource
+                        (conj lookup-path name)
+                        result
+                        (assoc opts :in-vec? true))]
+    (merge-with into result children-result)))
+
+(defmethod build-resource :multi-no-name [contents resource lookup-path result opts]
+  (let [children-result (map-indexed #(build-resource %2
+                                                      resource
+                                                      (conj lookup-path %1)
+                                                      result
+                                                      opts)
+                                     (:children contents))]
+    (merge-with into result
+                (apply (partial merge-with into) children-result))))
+
+(defmethod build-resource := [[name props contents] resource lookup-path result opts]
+  nil)
 
 ;;
-
-(def entities
-  {:user        {:email                  "oussama+manager@javelo.io",
-                 :email_personal         "mypersonal-email@google.com"
-                 :deleted_at             nil,
-                 :name                   "Oussama+Manager",
-                 :invitation_accepted_at "2019-11-21T14:48:12.526+01:00",
-                 :avatar_urls            {},
-                 :never_signed_in        false,
-                 :manager_id             1668,
-                 :okr_master             false,
-                 :id                     1659,
-                 :last_name              "el arbaoui",
-                 :current_hired_on       nil,
-                 :company_manager        true,
-                 :full_name              "Oussama El ARbaoui"
-                 :locale                 "en"
-                 :manager_username       "karimos@karimos.com"
-                 :job_description        ""},
-   :text_fields {:organization "cccccccccccc", :employee_number "bbbbbb", :job "aaaaa"}})
-
-
-(defn fill-assoc-in [m path val]
-  (loop [m m
-         p path
-         depth 1]
-    (if (empty? p)
-      (if (empty? (get-in m path))
-        (assoc-in m path val)
-        m)
-      (recur (if (get-in m (vec (take depth path)))
-               m
-               (assoc-in m (vec (take depth path)) {}))
-             (rest p)
-             (inc depth)))))
-
-(defn get-paths [schema]
-  (let [paths (atom [])]
-    (m/walk schema
-            (fn [_schema path _walked _options]
-              (swap! paths conj path)))
-    @paths))
-
-
-(defn path-in-mapping [mapping attr]
-  (some #(and (some #{attr} %) %) (keys-in mapping)))
-
-(defn mapping-value [mapping attr]
-  (let [p (path-in-mapping mapping attr)]
-    (get-in mapping p)))
-
-(defn attr-val [entity-k resource mappings attr & {:keys [many? type]}]
-  (let [attr-in-mapping (mapping-value mappings attr)]
-    (prn attr-in-mapping)
-    (if many?
-      (get resource
-           (-> (some #(and (= type (:type %)) %) attr-in-mapping)
-               (get :value)))
-      (get resource attr-in-mapping))))
-
 (comment
-  (some #{:userName} [:use :userName])
-  (lookup-map-2 mapping)
+  (build-resource (mu/to-map-syntax sch/full-user) user [] {:user {:age 22}} {})
+  (build-resource (mu/to-map-syntax sch/user-schema) user [] {:user {:age 22}} {})
 
-  (attr-val :user (:user entities) mapping :emails :many? true :type "personal")
-  (attr-val :user (:user entities) mapping :id))
-
-;;
-(defn extra-key-from-path [paths]
-  (prn paths)
-  (map last paths))
-;;
-
-
-;; TODO: Get all attrs names (ex: displayName...) from the paths
-;; then assoc to the write place
-;; i need to handle the special case of vectors
-(comment
-  (reduce (fn [acc v]
-            (prn "v->" v)
-            (fill-assoc-in acc v
-                           (attr-val :user (:user entities) mapping
-                                     (extra-key-from-path v))))
-          {} (get-paths sch/user-schema))
-  ;;
-
-
-  (mu/get sch/user-schema :displayName)
-  (mu/find-first sch/user-schema (fn [schema path _]
-                                   (when (vector? schema)
-                                     (= (-> schema first) :emails))))
-
-  (mu/get-in (m/schema sch/user-schema) [:emails :malli.core/in :work])
-
-  (mu/in->paths (m/schema sch/user-schema) [:emails :value])
-  (mu/path->in (m/schema sch/user-schema) [:emails])
-
-
-  (m/walk
-    sch/user-schema
-    (m/schema-walker
-      (fn [schema]
-        (prn (-> schema m/properties)))))
-
-  (get-vals [{:primary true, :type "dance", :value :email} {:type "+1234", :value :email_mobile}])
-  (mappings->columns mapping)
-  (sequential? '())
-  (flatten (get-vals (vals mapping)))
-
-  (walk/postwalk-demo mapping)
-  (lookup-map mapping)
   (def user
-    {:id           #uuid "0ea136ad-061d-45f1-8d92-db5627a156f2"
+    {:id           "0ea136ad-061d-45f1-8d92-db5627a156f2"
      :externalId   "8a61fbf4-543c-4ed2-94a4-74838d6ba8ef"
      :userName     "karim"
      :locale       "en"
      :name         {:familyName "El Arbaoui"
-                    :givenName  "Oussama"}
+                    :givenName  "Oussama"
+                    :formatted "Oussama-EL-Arbaoui"}
      :displayName  "Kamaro"
-     :emails       [{:value "ok@ok.com" :type "work" :primary true}
+     :emails       [{:value "work@work.com" :type "work" :primary true}
                     {:value "mobile@mobile.com" :type "mobile"}]
      :active       true
      :title        "Engineer"
@@ -211,68 +109,6 @@
                     :status            "on going"
                     :grade             "leader"
                     :seniorityDate     "12-12-2000"
-                    :contractStartDate "11-11-2011"}})
+                    :contractStartDate "11-11-2011"}}))
 
-  (def mapping
-    {:id          :uuid
-     :externalId  :source_id
-     :userName    :email
-     :name        {:givenName :name :familyName :last_name}
-     :displayName :full_name
-     :emails      [{:primary true :type "work" :value :email}
-                   {:type "personal" :value :email_personal}]
-     :active      :active
-     :locale      :locale})
-
-
-
-
-  (map-resource->entities user mapping)
-  (mappings->columns mapping)
-
-
-
-  (mg/generate [:map
-                [:id [:enum 12]]
-                [:name [:map
-                        [:formatted [:enum "karim"]]
-                        [:familyName [:enum "samir"]]]]])
-
-  (mg/generate [:map
-                [:value [:enum "ok@ok.com" "hi@hi.com"]]
-                [:type [:enum "work" "mobile"]]
-                [:primary {:optional true} boolean?]])
-
-  (mg/generate
-    [:vector {:min 2 :max 2}
-     [:map [:type [:enum :work :personal]] [:value string?]]]
-    {:size 10})
-
-  (mg/generate
-    [:vector
-     [:map [:type :work] [:value string?]]
-     [:map [:type :personal] [:value string?]]])
-
-  (mg/generate
-    [:vector {:min 2, :max 2}
-     [:multi {:dispatch :type}
-      [:work [:map [:type [:= :work]] [:value string?]]]
-      [:personal [:map [:type [:= :personal]] [:value string?]]]]])
-
-  (mg/generate sch/full-user)
-
-
-  (m/walk sch/user-schema
-          (m/schema-walker
-            (fn [schema]
-              (prn schema)
-              [:enum "ok"])))
-
-
-  (mu/get-in sch/user-schema [:name :formatted])
-
-  (mu/in->paths (m/schema sch/user-schema) [:emails :value])
-  (mu/get-in (m/schema sch/user-schema) [:emails])
-
-  (mu/to-map-syntax sch/user-schema))
 

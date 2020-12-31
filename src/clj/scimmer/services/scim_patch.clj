@@ -57,4 +57,4 @@
   {:attributes {name {:type :string}}})
 
 (comment
-  (schema->scim-patch-schema sch/user-schema-map))
+   (schema->scim-patch-schema sch/user-schema-map))

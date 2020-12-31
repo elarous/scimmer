@@ -2,17 +2,19 @@
   (:require [ring.util.http-response :refer :all]
             [clojure.pprint :as pp]
             [malli.util :as mu]
-            [scimmer.services.mapping2 :as mapping]
+            [scim-patch.core :as pa]
+            [scimmer.services.mapping :as mapping]
             [scimmer.services.schema :as sch]
             [scimmer.services.persistance :as p]
-            [scimmer.services.resource :as resource]))
+            [scimmer.services.resource :as resource]
+            [scimmer.services.scim-patch :refer [schema->scim-patch-schema]]))
 
 ;; helpers
 (def entities->user-resource
-  (partial resource/build-resource (mu/to-map-syntax sch/user-schema)))
+  (partial resource/build-resource sch/user-schema-map))
 
 (def user-resource->entities
-  (partial mapping/build-resource (mu/to-map-syntax sch/user-schema)))
+  (partial mapping/build-resource sch/user-schema-map))
 ;;
 
 (defn get-user [{:keys [path-params]}]
@@ -28,18 +30,15 @@
         saved-entities (p/create-user entities-maps)]
     (ok (entities->user-resource saved-entities))))
 
-;; TODO: this needs the resource (user + other kinds) to be retrievable from the database so that we can apply patch updates on it
 (defn update-user [{:keys [path-params body-params]}]
-  (let [patch-schema (sch/malli->scim-patch sch/user-schema)
-        #_find-user!]
-    (pp/pprint patch-schema)
-    {:message "ok"}))
+  (let [resource (-> {:id (:id path-params)}
+                     p/get-user
+                     entities->user-resource)
+        patch-schema (schema->scim-patch-schema sch/user-schema-map)
+        ops (->> (:Operations body-params)
+                 (map #(update % :op clojure.string/lower-case)))
+        updated (pa/patch patch-schema resource ops)
+        entities-maps (user-resource->entities updated [] {} {})
+        updated-entities (p/update-user (:id path-params) entities-maps)]
+    (ok (entities->user-resource updated-entities))))
 
-(comment
-  (user-resource->entities user [] {} {})
-  (get-user {:path-params {:id 1659}})
-  (def my-data {:data "name"})
-  (meta m/mapping)
-  (sch/malli->scim-patch sch/full-user)
-  (sch/malli->scim-patch sch/enterprise-ext)
-  (sch/malli->scim-patch sch/user-schema))

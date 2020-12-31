@@ -48,8 +48,8 @@
   (let [children-result (map #(build-resource % entities) (:children contents))]
     (map second children-result)))
 
-(defmethod build-resource := [[name props contents] entities]
-  [name (-> contents :children first)])
+(defmethod build-resource := [[tag-name props contents] entities]
+  [tag-name (-> contents :children first name)])
 
 ;;
 (comment
@@ -78,5 +78,5 @@
       :manager_username       "karimos@karimos.com"
       :job_description        ""}
      :custom_fields
-     {:work_number "+111111111"
+     {:phone_number "+111111111"
       :mobile_number "+222222222"}}))
