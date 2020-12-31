@@ -39,11 +39,11 @@
 
 (defmethod schema->scim-patch-schema :map [[name props contents]]
   (let [children-result (map schema->scim-patch-schema (:children contents))]
-    {name {:type (apply (partial merge-with into) children-result)}}))
+    {:attributes {name {:type (apply (partial merge-with into) children-result)}}}))
 
 (defmethod schema->scim-patch-schema :vector [[name props contents]]
   (let [children-result (schema->scim-patch-schema (-> contents :children first))]
-    {name  children-result}))
+    {:attributes  {name children-result}}))
 
 (defmethod schema->scim-patch-schema :multi-no-name [contents]
   (let [children-result (map schema->scim-patch-schema (:children contents))
@@ -51,7 +51,7 @@
                     (map vals)
                     flatten
                     (apply (partial merge-with into)))]
-    (assoc result :multi-valued true)))
+    (assoc (-> result vals first) :multi-valued true)))
 
 (defmethod schema->scim-patch-schema := [[name props contents]]
   {:attributes {name {:type :string}}})
