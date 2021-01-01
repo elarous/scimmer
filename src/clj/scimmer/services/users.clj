@@ -42,3 +42,7 @@
         updated-entities (p/update-user (:id path-params) entities-maps)]
     (ok (entities->user-resource updated-entities))))
 
+(defn delete-user [{:keys [path-params]}]
+  (p/delete-user (:id path-params))
+  (no-content))
+

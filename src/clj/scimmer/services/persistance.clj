@@ -31,8 +31,5 @@
       (get :body)
       (json/read-str :key-fn keyword)))
 
-(comment
-  (defn run [query]
-    (jdbc/execute! conn (sql/format query)))
-  (insert-resource! :ok {:name "kareem" :age 32 :another :ok :hi :therke}))
-
+(defn delete-user [id]
+  (http/delete (str base-url id)))

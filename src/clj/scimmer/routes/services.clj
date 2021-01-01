@@ -55,7 +55,8 @@
    ["/scim"
     ["/v2"
      ["/users/:id" {:get   users/get-user
-                    :patch users/update-user}]
+                    :patch users/update-user
+                    :delete users/delete-user}]
      ["/users" {:get  users/get-users
                 :post users/create-user}]]]
 
@@ -100,10 +101,4 @@
                         :body    (-> "public/img/warning_clojure.png"
                                      (io/resource)
                                      (io/input-stream))})}}]]])
-
-(comment
-  (def router (r/router (service-routes)))
-  (r/routes router)
-  (r/match-by-path router "/api/scim/v2/users"))
-
 
