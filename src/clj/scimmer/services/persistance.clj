@@ -4,10 +4,13 @@
             [next.jdbc :as jdbc]
             [next.jdbc.sql :as jdbc-sql]
             [clj-http.client :as http]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [mount.core :refer [args defstate]]
+            [scimmer.config :refer [env]]))
 
-;; TODO: this should be in an env variable
-(def base-url "http://localhost:3000/integration_users/")
+(defstate base-url
+  :start
+  (:destination-base-url env))
 
 (defn get-user [{:keys [id]}]
   (-> (http/get (str base-url id))
