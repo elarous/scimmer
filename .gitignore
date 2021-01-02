@@ -18,3 +18,4 @@ shadow-cljs.edn
 /log
 /.idea
 /.vscode
+scimmer.iml
