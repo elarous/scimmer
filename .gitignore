@@ -20,3 +20,4 @@ shadow-cljs.edn
 /.vscode
 scimmer.iml
 test/clj/scimmer/log/scimmer.log
+scimmer.iml
