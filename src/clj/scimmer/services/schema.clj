@@ -7,7 +7,7 @@
   [:map
    [:id {::mapping :user/uuid} uuid?]
    [:externalId {::mapping :user/source_id} string?]
-   [:userName {::mapping :user/email} string?]
+   [:userName {::mapping :user/user_name} string?]
    [:locale {::mapping :custom_fields/locale} string?]
    [:active {::mapping :user/active} boolean?]
    [:title {::mapping :user/job} string?]
@@ -49,16 +49,6 @@
      [:$ref string?]
      [:displayName string?]]]])
 
-(def javelo-ext
-  [:map {:extension :urn:ietf:params:scim:schemas:extension:javelo:2.0:User}
-   [:managerUserName {::mapping :user/manager_username} string?]
-   [:status {::mapping :custom_fields/status} string?]
-   [:grade {::mapping :custom_fields/grade} string?]
-   [:seniorityDate {::mapping :custom_fields/first_hired_on} string?]
-   [:contractStartDate {::mapping :custom_fields/current_hired_on} string?]])
-
-
-
 ;; Operations schemas
 (def update-schema
   [:map
@@ -74,8 +64,8 @@
   (conj user-schema [(get (m/properties ext-schema) :extension) ext-schema]))
 
 ;; combined schemas
-(def user-schema (-> full-user
-                     (include-extension enterprise-ext)
-                     (include-extension javelo-ext)))
+(def user-schema (-> full-user (include-extension enterprise-ext)))
+
 
 (def user-schema-map (mu/to-map-syntax user-schema))
+

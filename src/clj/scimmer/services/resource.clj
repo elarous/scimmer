@@ -46,7 +46,7 @@
 
 (defmethod build-resource :multi-no-name [contents entities]
   (let [children-result (map #(build-resource % entities) (:children contents))]
-    (map second children-result)))
+    (mapv second children-result)))
 
 (defmethod build-resource := [[tag-name props contents] entities]
   [tag-name (-> contents :children first name)])
@@ -54,6 +54,7 @@
 ;;
 (comment
   (build-resource (mu/to-map-syntax sch/full-user) entities)
+
 
   (def entities
     {:user
@@ -79,4 +80,6 @@
       :job_description        ""}
      :custom_fields
      {:phone_number "+111111111"
-      :mobile_number "+222222222"}}))
+      :mobile_number "+222222222"}})
+
+  )
