@@ -1,0 +1,1 @@
+(ns scimmer.schema.events)

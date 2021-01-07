@@ -33,6 +33,7 @@
     <orderEntry type="library" name="Leiningen: cheshire:5.10.0" level="project" />
     <orderEntry type="library" name="Leiningen: cider/piggieback:0.5.1" level="project" />
     <orderEntry type="library" name="Leiningen: clj-commons/clj-yaml:0.7.0" level="project" />
+    <orderEntry type="library" name="Leiningen: clj-commons/cljss:1.6.4" level="project" />
     <orderEntry type="library" name="Leiningen: clj-http:3.11.0" level="project" />
     <orderEntry type="library" name="Leiningen: clj-stacktrace:0.2.8" level="project" />
     <orderEntry type="library" name="Leiningen: clj-tuple:0.2.2" level="project" />
@@ -101,7 +102,9 @@
     <orderEntry type="library" name="Leiningen: fipp:0.6.23" level="project" />
     <orderEntry type="library" name="Leiningen: funcool/cuerdas:2.2.0" level="project" />
     <orderEntry type="library" name="Leiningen: funcool/struct:1.4.0" level="project" />
+    <orderEntry type="library" name="Leiningen: garden:1.3.9" level="project" />
     <orderEntry type="library" name="Leiningen: hawk:0.2.11" level="project" />
+    <orderEntry type="library" name="Leiningen: herb:0.10.0" level="project" />
     <orderEntry type="library" name="Leiningen: hiccup:1.0.5" level="project" />
     <orderEntry type="library" name="Leiningen: hikari-cp:2.12.0" level="project" />
     <orderEntry type="library" name="Leiningen: honeysql:1.0.444" level="project" />
@@ -201,6 +204,7 @@
     <orderEntry type="library" name="Leiningen: org.jboss.xnio/xnio-api:3.8.0.Final" level="project" />
     <orderEntry type="library" name="Leiningen: org.jboss.xnio/xnio-nio:3.8.0.Final" level="project" />
     <orderEntry type="library" name="Leiningen: org.msgpack/msgpack:0.6.12" level="project" />
+    <orderEntry type="library" name="Leiningen: org.omcljs/om:1.0.0-alpha48" level="project" />
     <orderEntry type="library" name="Leiningen: org.ow2.asm/asm-analysis:7.1" level="project" />
     <orderEntry type="library" name="Leiningen: org.ow2.asm/asm-commons:7.1" level="project" />
     <orderEntry type="library" name="Leiningen: org.ow2.asm/asm-tree:7.1" level="project" />
@@ -236,6 +240,7 @@
     <orderEntry type="library" name="Leiningen: ring/ring-headers:0.3.0" level="project" />
     <orderEntry type="library" name="Leiningen: ring/ring-mock:0.4.0" level="project" />
     <orderEntry type="library" name="Leiningen: ring/ring-ssl:0.3.0" level="project" />
+    <orderEntry type="library" name="Leiningen: sablono:0.8.1" level="project" />
     <orderEntry type="library" name="Leiningen: seancorfield/next.jdbc:1.1.547" level="project" />
     <orderEntry type="library" name="Leiningen: selmer:1.12.31" level="project" />
     <orderEntry type="library" name="Leiningen: slingshot:0.12.2" level="project" />

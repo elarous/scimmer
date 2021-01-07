@@ -12,7 +12,8 @@
     [reitit.core :as reitit]
     [reitit.frontend.easy :as rfe]
     ["grommet" :refer [Grommet Button]]
-    [clojure.string :as string])
+    [clojure.string :as string]
+    [scimmer.schema.views :refer [schema-page]])
   (:import goog.History))
 
 (defn nav-link [uri title page]
@@ -35,6 +36,7 @@
                 {:class (when @expanded? :is-active)}
                 [:div.navbar-start
                  [nav-link "#/" "Home" :home]
+                 [nav-link "#/schema" :schema]
                  [nav-link "#/about" "About" :about]]]]))
 
 (defn about-page []
@@ -46,7 +48,6 @@
    [:> Button {:primary  true
                :label    "Grommet button"
                :on-click #(js/alert "button clicked")}]])
-
 
 (defn page []
   (if-let [page @(rf/subscribe [:common/page])]
@@ -63,6 +64,8 @@
     [["/" {:name        :home
            :view        #'home-page
            :controllers [{:start (fn [_] (rf/dispatch [:page/init-home]))}]}]
+     ["/schema" {:name :schema
+                 :view #'schema-page}]
      ["/about" {:name :about
                 :view #'about-page}]]))
 
