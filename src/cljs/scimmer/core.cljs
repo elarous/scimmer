@@ -13,7 +13,7 @@
     [reitit.frontend.easy :as rfe]
     ["grommet" :refer [Grommet Button]]
     [clojure.string :as string]
-    [scimmer.schema.views :refer [schema-page]]
+    [scimmer.mapping.views :refer [mapping-page]]
     [herb.core :refer [<class]]
     [scimmer.styles :as stl]
     [scimmer.nav.views :refer [navbar]])
@@ -24,10 +24,8 @@
    [:img {:src "/img/warning_clojure.png"}]])
 
 (defn home-page []
-  [:section.section>div.container>div.content
-   [:> Button {:primary  true
-               :label    "Grommet button"
-               :on-click #(js/alert "button clicked")}]])
+  [mapping-page])
+
 
 (defn page []
   (if-let [page @(rf/subscribe [:common/page])]

@@ -1,4 +1,4 @@
-(ns scimmer.schema.views
+(ns scimmer.mapping.views
   (:require ["react" :as re]
             [reagent.core :as reagent]
             [herb.core :refer [<class]]
@@ -80,7 +80,7 @@
 
 ;;
 
-(defn schema-page []
+(defn mapping-page []
   [:div
    [:> Grommet {:theme (clj->js theme)}
     [:> Heading {:size  "small"

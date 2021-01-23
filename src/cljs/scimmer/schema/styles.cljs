@@ -1,1 +1,0 @@
-(ns scimmer.schema.styles)
