@@ -3,7 +3,7 @@
 (def colors
   {:primary        "#5BC0BE"
    :highlight      "#00B7D5"
-   :secondary      "#3A506B"
+   :secondary      "#e75a7c"
    :text-primary   "#0B132B"
    :text-secondary "#1C2541"
    :bg-dark        "#595F72"

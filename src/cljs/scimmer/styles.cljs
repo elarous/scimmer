@@ -4,6 +4,7 @@
 (defn page-style []
   {:display               "grid"
    :height                "100%"
+   :width                "100%"
    :position              "absolute"
    :top                   "0"
    :left                  "0"
