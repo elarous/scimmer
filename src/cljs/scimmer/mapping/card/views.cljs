@@ -10,7 +10,7 @@
    [:div {:class (<class stl/header-of)} "of"]
    [:div {:class (<class stl/header-object)} card-object]])
 
-(defn card [{:keys [class]} header]
+(defn card [{:keys [class]} header & body]
   [:div {:class (join (<class stl/card) class)}
    header
-   [:body]])
+   body])

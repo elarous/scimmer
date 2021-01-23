@@ -19,6 +19,6 @@
    :normal  "Nunito"})
 
 (def shadows
-  {:high "6px 2px 23px -1px rgba(0,0,0,0.51)"
-   :medium "1px 2px 14px -5px rgba(0,0,0,0.42)"});
+  {:high   "6px 2px 23px -1px rgba(0,0,0,0.51)"
+   :medium "1px 2px 14px -5px rgba(0,0,0,0.42)"})
 

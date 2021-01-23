@@ -31,29 +31,4 @@
    :box-shadow    (:medium shadows)
    :background    "#fff"})
 
-(defn attr-header []
-  {:margin           (sizes 1)
-   :padding          (sizes 1)
-   :background-color (:grey-2 colors)
-   :color            (:primary colors)
-   :border-radius    (sizes 1)
-   :text-align       "center"
-   :font-weight      "600"})
-
-(defn attr-inputs-container []
-  {:display          "flex"
-   :background-color (:grey-1 colors)
-   :border-radius    (sizes 1)
-   :padding          (sizes 1)
-   :margin-left      (sizes 2)
-   :margin-right     (sizes 2)})
-
-(defn attr-form-field []
-  {:border  "none !important"
-   :outline "none"
-   :margin  (sizes 1)})
-
-(defn attr-input []
-  {:border  (str "1px solid " (:grey-3 colors))
-   :padding (sizes 1)})
 
