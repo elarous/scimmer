@@ -17,6 +17,8 @@ shadow-cljs.edn
 /log
 /.idea
 /.vscode
+/.clj-kondo
+/.lsp
 scimmer.iml
 test/clj/scimmer/log/scimmer.log
 scimmer.iml

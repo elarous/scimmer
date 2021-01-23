@@ -2,18 +2,20 @@
   "Userspace functions you can run by default in your local REPL."
   (:require
    [scimmer.config :refer [env]]
-    [clojure.pprint]
-    [clojure.spec.alpha :as s]
-    [expound.alpha :as expound]
-    [mount.core :as mount]
-    [scimmer.core :refer [start-app]]
-    [scimmer.db.core]
-    [conman.core :as conman]
-    [luminus-migrations.core :as migrations]))
+   [clojure.pprint]
+   [clojure.spec.alpha :as s]
+   [expound.alpha :as expound]
+   [mount.core :as mount]
+   [scimmer.core :refer [start-app]]
+   [scimmer.db.core]
+   [conman.core :as conman]
+   [luminus-migrations.core :as migrations]
+   [vlaaad.reveal :as reveal]))
 
 (alter-var-root #'s/*explain-out* (constantly expound/printer))
 
 (add-tap (bound-fn* clojure.pprint/pprint))
+(add-tap (reveal/ui))
 
 (defn start
   "Starts application.

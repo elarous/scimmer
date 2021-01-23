@@ -55,9 +55,6 @@
                  [herb "0.10.0"]
                  [clj-http "3.11.0"]]
 
-
-
-
   :min-lein-version "2.0.0"
   
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
@@ -109,7 +106,8 @@
                                  [pjstadig/humane-test-output "0.10.0"]
                                  [prone "2020-01-17"]
                                  [ring/ring-devel "1.8.2"]
-                                 [ring/ring-mock "0.4.0"]]
+                                 [ring/ring-mock "0.4.0"]
+                                 [vlaaad/reveal "1.2.190"]] 
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                  [jonase/eastwood "0.3.5"]] 
                   
