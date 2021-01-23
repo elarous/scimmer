@@ -37,6 +37,9 @@
     <orderEntry type="library" name="Leiningen: clj-http:3.11.0" level="project" />
     <orderEntry type="library" name="Leiningen: clj-stacktrace:0.2.8" level="project" />
     <orderEntry type="library" name="Leiningen: clj-tuple:0.2.2" level="project" />
+    <orderEntry type="library" name="Leiningen: cljfx/css:1.1.0" level="project" />
+    <orderEntry type="library" name="Leiningen: cljfx:1.7.12" level="project" />
+    <orderEntry type="library" name="Leiningen: cljfx:1.7.12:jdk11" level="project" />
     <orderEntry type="library" name="Leiningen: cljs-ajax:0.8.1" level="project" />
     <orderEntry type="library" name="Leiningen: cljsjs/highlight:9.12.0-2" level="project" />
     <orderEntry type="library" name="Leiningen: cljsjs/prop-types:15.6.0-0" level="project" />
@@ -82,6 +85,21 @@
     <orderEntry type="library" name="Leiningen: com.layerware/hugsql-adapter:0.5.1" level="project" />
     <orderEntry type="library" name="Leiningen: com.layerware/hugsql-core:0.5.1" level="project" />
     <orderEntry type="library" name="Leiningen: com.layerware/hugsql:0.5.1" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-ext-autolink:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-ext-wikilink:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-util-ast:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-util-builder:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-util-collection:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-util-data:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-util-dependency:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-util-format:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-util-html:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-util-misc:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-util-options:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-util-sequence:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-util-visitor:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark-util:0.62.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.vladsch.flexmark/flexmark:0.62.0" level="project" />
     <orderEntry type="library" name="Leiningen: com.wsscode/pathom:2.2.31" level="project" />
     <orderEntry type="library" name="Leiningen: com.wsscode/spec-inspec:1.0.0-alpha2" level="project" />
     <orderEntry type="library" name="Leiningen: com.yahoo.platform.yui/yuicompressor:2.4.8" level="project" />
@@ -203,8 +221,20 @@
     <orderEntry type="library" name="Leiningen: org.jboss.threads/jboss-threads:3.1.0.Final" level="project" />
     <orderEntry type="library" name="Leiningen: org.jboss.xnio/xnio-api:3.8.0.Final" level="project" />
     <orderEntry type="library" name="Leiningen: org.jboss.xnio/xnio-nio:3.8.0.Final" level="project" />
+    <orderEntry type="library" name="Leiningen: org.jetbrains/annotations:15.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.msgpack/msgpack:0.6.12" level="project" />
+    <orderEntry type="library" name="Leiningen: org.nibor.autolink/autolink:0.6.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.omcljs/om:1.0.0-alpha48" level="project" />
+    <orderEntry type="library" name="Leiningen: org.openjfx/javafx-base:15.0.1" level="project" />
+    <orderEntry type="library" name="Leiningen: org.openjfx/javafx-base:15.0.1:mac" level="project" />
+    <orderEntry type="library" name="Leiningen: org.openjfx/javafx-controls:15.0.1" level="project" />
+    <orderEntry type="library" name="Leiningen: org.openjfx/javafx-controls:15.0.1:mac" level="project" />
+    <orderEntry type="library" name="Leiningen: org.openjfx/javafx-graphics:15.0.1" level="project" />
+    <orderEntry type="library" name="Leiningen: org.openjfx/javafx-graphics:15.0.1:mac" level="project" />
+    <orderEntry type="library" name="Leiningen: org.openjfx/javafx-media:15.0.1" level="project" />
+    <orderEntry type="library" name="Leiningen: org.openjfx/javafx-media:15.0.1:mac" level="project" />
+    <orderEntry type="library" name="Leiningen: org.openjfx/javafx-web:15.0.1" level="project" />
+    <orderEntry type="library" name="Leiningen: org.openjfx/javafx-web:15.0.1:mac" level="project" />
     <orderEntry type="library" name="Leiningen: org.ow2.asm/asm-analysis:7.1" level="project" />
     <orderEntry type="library" name="Leiningen: org.ow2.asm/asm-commons:7.1" level="project" />
     <orderEntry type="library" name="Leiningen: org.ow2.asm/asm-tree:7.1" level="project" />
@@ -251,6 +281,7 @@
     <orderEntry type="library" name="Leiningen: thheller/shadow-cljsjs:0.0.21" level="project" />
     <orderEntry type="library" name="Leiningen: thheller/shadow-util:0.7.0" level="project" />
     <orderEntry type="library" name="Leiningen: tigris:0.1.2" level="project" />
+    <orderEntry type="library" name="Leiningen: vlaaad/reveal:1.2.190" level="project" />
     <orderEntry type="library" name="Leiningen: zprint:0.5.1" level="project" />
   </component>
 </module>
