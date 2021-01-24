@@ -10,9 +10,15 @@
 (defn schema-card []
   [card {:class (<class stl/schema-card)}
    [header "Schema" "User"]
-   [attribute [single-attr]]
-   [attribute [object-attr]]
-   [attribute [array-attr]]])
+   [attribute "locale" [single-attr {:value     {:entity "my_locale" :mapping "profile"}
+                                     :on-change #(js/console.log (-> % .-target .-value))}]]
+   [attribute "userName" [object-attr {:firstName {:value     {:entity "first_name" :mapping "profile"}
+                                                   :on-change #(js/console.log (-> % .-target .-value))}
+                                       :lastName  {:value     {:entity "last_name" :mapping "profile"}
+                                                   :on-change #(js/console.log (-> % .-target .-value))}}]]
+   [attribute "email" [array-attr {:value [{:entity "primary_email" :type "work" :mapping "profile"}
+                                           {:entity "secondary_email" :type "mobile" :mapping "profile"}]
+                                   :on-change #(js/console.log (-> % .-target .-value))}]]])
 
 (defn mapping-page []
   [:div {:class (<class stl/container)}

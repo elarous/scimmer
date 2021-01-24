@@ -4,7 +4,7 @@
             ["grommet" :refer [Grommet Button Heading Select Grid Box TextInput FormField]]
             [scimmer.mapping.attribute.styles :as stl]))
 
-;; Icon
+;; Icons
 (defn collapse-icon [{:keys [collapsed?]}]
   [:svg {:class (<class stl/collapse-icon collapsed?) :xmlns "http://www.w3.org/2000/svg", :width "24", :height "24", :viewbox "0 0 24 24"}
    [:g {:id "arrow-right", :transform "translate(12 12) rotate(90)"}
@@ -22,7 +22,7 @@
       [:path {:id "Path_103", :data-name "Path 103", :d "M20.3,13.43a1,1,0,0,0-1.25.65A7.14,7.14,0,0,1,12.18,19,7.1,7.1,0,0,1,5,12a7.1,7.1,0,0,1,7.18-7,7.26,7.26,0,0,1,4.65,1.67l-2.17-.36a1,1,0,1,0-.32,1.98l4.24.7h.17a1,1,0,0,0,.34-.06.33.33,0,0,0,.1-.06.78.78,0,0,0,.2-.11l.09-.11c0-.05.09-.09.13-.15s0-.1.05-.14a1.34,1.34,0,0,0,.07-.18l.75-4a1.018,1.018,0,0,0-2-.38l-.27,1.45A9.21,9.21,0,0,0,12.18,3,9.1,9.1,0,0,0,3,12a9.1,9.1,0,0,0,9.18,9A9.12,9.12,0,0,0,21,14.68a1,1,0,0,0-.7-1.25Z", :fill "#97a0be"}]]]]])
 ;;
 
-(defn input [name label]
+(defn input [{:keys [name label value on-change]}]
   [:> FormField {:name     name
                  :html-for "text-input"
                  :class    (<class stl/attr-form-field)}
@@ -30,51 +30,63 @@
                   :size        "small"
                   :class       (<class stl/attr-input)
                   :id          "text-input"
-                  :name        name}]])
+                  :name        name
+                  :value       value
+                  :on-change   on-change}]])
 
-(defn single-attr []
+(defn single-attr [{:keys [value on-change]}]
   [:div {:class (<class stl/single-attr)}
-   [input "entity" "Entity"]
-   [input "mapping" "Mapping"]
+   [input {:name        "entity"
+           :placeholder "Entity"
+           :value       (:entity value)
+           :on-change   on-change}]
+   [input {:name        "mapping"
+           :placeholder "Mapping"
+           :value       (:mapping value)
+           :on-change   on-change}]
    [reset-icon]])
 
-(defn object-attr []
+(defn object-attr [sub-attrs]
   [:div {:class (<class stl/object-attr)}
-   [:div {:class (<class stl/object-subattr)}
-    [:div {:class (<class stl/object-attr-title)} "firstName"]
-    [:div {:class (<class stl/object-subattr-inputs)}
-     [input "entity" "Entity"]
-     [input "mapping" "Mapping"]
-     [reset-icon]]]
+   (for [[attr {:keys [value on-change]}] sub-attrs]
+     [:div {:class (<class stl/object-subattr)}
+      [:div {:class (<class stl/object-attr-title)} (name attr)]
+      [:div {:class (<class stl/object-subattr-inputs)}
+       [input {:name "entity"
+               :placeholder "Entity"
+               :value (:entity value)
+               :on-change on-change}]
+       [input {:name "mapping"
+               :placeholder "Mapping"
+               :value (:mapping value)
+               :on-change on-change}]
+       [reset-icon]]])])
 
-   [:div {:class (<class stl/object-subattr)}
-    [:div {:class (<class stl/object-attr-title)} "firstName"]
-    [:div {:class (<class stl/object-subattr-inputs)}
-     [input "entity" "Entity"]
-     [input "mapping" "Mapping"]
-     [reset-icon]]]])
-
-(defn array-attr []
+(defn array-attr [{:keys [value on-change]}]
   [:div {:class (<class stl/array-attr)}
-   [:div {:class (<class stl/array-attr-inputs)}
-    [input "entity" "Entity"]
-    [input "type" "Type"]
-    [input "mapping" "Mapping"]
-    [reset-icon]]
+   (for [{:keys [entity type mapping]} value]
+     [:div {:class (<class stl/array-attr-inputs)}
+      [input {:name "entity"
+              :placeholder "Entity"
+              :value entity
+              :on-change on-change}]
+      [input {:name "type"
+              :placeholder "Type"
+              :value type
+              :on-change on-change}]
+      [input {:name "mapping"
+              :placeholder "Mapping"
+              :value mapping
+              :on-change on-change}]
+      [reset-icon]])])
 
-   [:div {:class (<class stl/array-attr-inputs)}
-    [input "entity" "Entity"]
-    [input "type" "Type"]
-    [input "mapping" "Mapping"]
-    [reset-icon]]])
-
-(defn attribute [body]
+(defn attribute [name body]
   (r/with-let [collapsed? (r/atom false)]
     [:div {:class (<class stl/container)}
      [:div {:class    (<class stl/head)
             :on-click #(swap! collapsed? not)}
       [collapse-icon {:collapsed? @collapsed?}]
-      [:div {} "userName"]]
+      [:div {} name]]
      (when-not @collapsed?
        [:div {:class (<class stl/body)} body])]))
 
