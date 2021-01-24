@@ -20,11 +20,13 @@
   {:color (:highlight colors)})
 
 (defn header []
-  {:background      (:grey-1 colors)
-   :display         "flex"
-   :justify-content "center"
-   :align-items     "center"
-   :padding         (sizes 2)})
+  {:background             (:grey-1 colors)
+   :display                "flex"
+   :justify-content        "center"
+   :align-items            "center"
+   :border-top-left-radius (sizes 1)
+   :border-top-right-radius (sizes 1)
+   :padding                (sizes 2)})
 
 (defn card []
   {:border-radius (sizes 1)

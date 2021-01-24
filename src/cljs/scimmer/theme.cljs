@@ -7,6 +7,7 @@
    :text-primary   "#0B132B"
    :text-secondary "#1C2541"
    :bg-dark        "#595F72"
+   :bg-darker      "#333A46"
    :grey-1         "#F8F9FA"
    :grey-2         "#E9ECEF"
    :grey-3         "#DEE2E6"})
