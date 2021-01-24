@@ -18,3 +18,15 @@
     (filterv (fn [[_name _props schema]]
                (not (contains? #{:map :vector} (:type schema)))) all-attrs)))
 
+(rf/reg-sub
+  :mapping/map-attrs
+  :<- [:mapping/all-attrs]
+  (fn [all-attrs _]
+    (filterv (fn [[_name _props schema]] (= :map (:type schema))) all-attrs)))
+
+(rf/reg-sub
+  :mapping/array-attrs
+  :<- [:mapping/all-attrs]
+  (fn [all-attrs]
+    (filterv (fn [[_name _props schema]] (= :vector (:type schema))) all-attrs)))
+

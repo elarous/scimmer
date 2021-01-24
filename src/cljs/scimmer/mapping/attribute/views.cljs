@@ -46,39 +46,44 @@
            :on-change   on-change}]
    [reset-icon]])
 
-(defn object-attr [sub-attrs]
-  [:div {:class (<class stl/object-attr)}
-   (for [[attr {:keys [value on-change]}] sub-attrs]
-     [:div {:class (<class stl/object-subattr)}
-      [:div {:class (<class stl/object-attr-title)} (name attr)]
-      [:div {:class (<class stl/object-subattr-inputs)}
-       [input {:name "entity"
-               :placeholder "Entity"
-               :value (:entity value)
-               :on-change on-change}]
-       [input {:name "mapping"
-               :placeholder "Mapping"
-               :value (:mapping value)
-               :on-change on-change}]
-       [reset-icon]]])])
+(defn object-subattr [attr {:keys [value on-change]}]
+  [:div {:class (<class stl/object-subattr)}
+   [:div {:class (<class stl/object-attr-title)} (name attr)]
+   [:div {:class (<class stl/object-subattr-inputs)}
+    [input {:name "entity"
+            :placeholder "Entity"
+            :value (:entity value)
+            :on-change on-change}]
+    [input {:name "mapping"
+            :placeholder "Mapping"
+            :value (:mapping value)
+            :on-change on-change}]
+    [reset-icon]]])
 
-(defn array-attr [{:keys [value on-change]}]
-  [:div {:class (<class stl/array-attr)}
-   (for [{:keys [entity type mapping]} value]
-     [:div {:class (<class stl/array-attr-inputs)}
-      [input {:name "entity"
-              :placeholder "Entity"
-              :value entity
-              :on-change on-change}]
-      [input {:name "type"
-              :placeholder "Type"
-              :value type
-              :on-change on-change}]
-      [input {:name "mapping"
-              :placeholder "Mapping"
-              :value mapping
-              :on-change on-change}]
-      [reset-icon]])])
+(defn object-attr [& body]
+  [:div {:class (<class stl/object-attr)} body])
+
+(defn array-attr-item [{:keys [value]}]
+  (let [{:keys [entity on-change type mapping]} value]
+    (js/console.log entity on-change type mapping)
+    [:div {:class (<class stl/array-attr-inputs)}
+     [input {:name        "entity"
+             :placeholder "Entity"
+             :value       entity
+             :on-change   on-change}]
+     [input {:name        "type"
+             :placeholder "Type"
+             :value       type
+                          :on-change on-change}]
+     [input {:name        "mapping"
+             :placeholder "Mapping"
+             :value       mapping
+             :on-change   on-change}]
+     [reset-icon]]))
+
+(defn array-attr [& body]
+  [:div {:class (<class stl/array-attr)} body])
+
 
 (defn attribute [name body]
   (r/with-let [collapsed? (r/atom false)]

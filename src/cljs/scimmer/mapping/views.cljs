@@ -7,29 +7,51 @@
             [scimmer.mapping.subs]
             [scimmer.mapping.styles :as stl]
             [scimmer.mapping.card.views :refer [card header]]
-            [scimmer.mapping.attribute.views :refer [attribute single-attr object-attr array-attr]]))
+            [scimmer.mapping.attribute.views :refer [attribute single-attr object-attr object-subattr array-attr array-attr-item]]))
 
+;; helper functions
 (defn get-entity-mapping [ns-k]
-  (println ns-k)
   (let [mapping (namespace ns-k)
         entity (name ns-k)]
     {:mapping mapping :entity entity}))
 
+(defn get-mapping-attr-item [schema]
+  (->> schema
+       :children
+       (some (fn [v] (and (= (first v) :value) v)))
+       second
+       :scimmer.services.schema/mapping))
+;;
+
 (defn schema-card []
-  (let [single-attrs @(rf/subscribe [:mapping/single-attrs])]
+  (let [single-attrs @(rf/subscribe [:mapping/single-attrs])
+        map-attrs @(rf/subscribe [:mapping/map-attrs])
+        array-attrs @(rf/subscribe [:mapping/array-attrs])]
+
     [card {:class (<class stl/schema-card)}
      [header "Schema" "User"]
+
      (for [[attr-name attr-props _schema] single-attrs]
        ^{:keys attr-name}
        [attribute attr-name [single-attr {:value     (get-entity-mapping (:scimmer.services.schema/mapping attr-props))
                                           :on-change #(js/console.log (-> % .-target .-value))}]])
-     [attribute "userName" [object-attr {:firstName {:value     {:entity "first_name" :mapping "profile"}
-                                                     :on-change #(js/console.log (-> % .-target .-value))}
-                                         :lastName  {:value     {:entity "last_name" :mapping "profile"}
-                                                     :on-change #(js/console.log (-> % .-target .-value))}}]]
-     [attribute "email" [array-attr {:value     [{:entity "primary_email" :type "work" :mapping "profile"}
-                                                 {:entity "secondary_email" :type "mobile" :mapping "profile"}]
-                                     :on-change #(js/console.log (-> % .-target .-value))}]]]))
+
+     (for [[attr-name _attr-props schema] map-attrs]
+       [attribute attr-name
+        [object-attr
+         (for [[attr-name attr-props _schema] (:children schema)]
+           ^{:keys attr-name}
+           [object-subattr attr-name {:value (get-entity-mapping (:scimmer.services.schema/mapping attr-props))}])]])
+
+     (for [[attr-name _attr-props schema] array-attrs]
+       [attribute attr-name
+        (let [arr-schema (-> schema :children first :children)]
+          [array-attr
+           (for [[attr-name _props children] arr-schema]
+             ^{:keys attr-name}
+             [array-attr-item {:value (merge {:type attr-name}
+                                             (-> (get-mapping-attr-item children)
+                                                 get-entity-mapping))}])])])]))
 
 (defn mapping-page []
   [:div {:class (<class stl/container)}

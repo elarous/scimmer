@@ -9,9 +9,9 @@
                [:name
                 nil
                 {:type     :map,
-                 :children [[:formatted {} {:type string?}]
-                            [:familyName {} {:type string?}]
-                            [:givenName {} {:type string?}]]}]
+                 :children [[:formatted {:scimmer.services.schema/mapping :profile/display_name} {:type string?}]
+                            [:familyName {:scimmer.services.schema/mapping :user/family_name} {:type string?}]
+                            [:givenName {:scimmer.services.schema/mapping :user/first_name} {:type string?}]]}]
                [:emails
                 nil
                 {:type     :vector,
@@ -21,13 +21,18 @@
                                            nil
                                            {:type     :map,
                                             :children [[:type nil {:type :=, :children [:work]}]
-                                                       [:value {} {:type string?}]]}]
+                                                       [:value {:scimmer.services.schema/mapping :user/email} {:type string?}]]}]
+                                          [:testEmail
+                                           nil
+                                           {:type     :map,
+                                            :children [[:type nil {:type :=, :children [:test]}]
+                                                       [:value {:scimmer.services.schema/mapping :profile/test_email} {:type string?}]]}]
                                           [:personal
                                            nil
                                            {:type     :map,
                                             :children [[:type nil {:type :=, :children [:personal]}]
                                                        [:value
-                                                        {}
+                                                        {:scimmer.services.schema/mapping :profile/personal_email}
                                                         {:type string?}]]}]]}]}]]}})
 
 (comment
