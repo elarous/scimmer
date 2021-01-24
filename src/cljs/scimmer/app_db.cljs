@@ -6,6 +6,7 @@
   {:mapping
    {:type     :map,
     :children [[:locale {:scimmer.services.schema/mapping :profile/locale} {:type string?}]
+               [:userName {:scimmer.services.schema/mapping :user/user_name} {:type string?}]
                [:name
                 nil
                 {:type     :map,

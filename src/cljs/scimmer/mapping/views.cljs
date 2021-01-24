@@ -5,6 +5,7 @@
             [herb.core :refer [<class]]
             ["grommet" :refer [Grommet Button Heading Select Grid Box TextInput FormField]]
             [scimmer.mapping.subs]
+            [scimmer.mapping.events]
             [scimmer.mapping.styles :as stl]
             [scimmer.mapping.card.views :refer [card header]]
             [scimmer.mapping.attribute.views :refer [attribute single-attr object-attr object-subattr array-attr array-attr-item]]))
