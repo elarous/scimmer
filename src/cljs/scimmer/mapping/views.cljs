@@ -33,9 +33,21 @@
      [header "Schema" "User"]
 
      (for [[attr-name attr-props _schema] single-attrs]
-       ^{:keys attr-name}
-       [attribute attr-name [single-attr {:value     (get-entity-mapping (:scimmer.services.schema/mapping attr-props))
-                                          :on-change #(js/console.log (-> % .-target .-value))}]])
+       (let [value (get-entity-mapping (:scimmer.services.schema/mapping attr-props))]
+         ^{:keys attr-name}
+         [attribute attr-name
+          [single-attr
+           {:value value
+            :on-change
+                   (fn [source e]
+                     (rf/dispatch [:mapping/>update-single-attr
+                                   {:name    attr-name
+                                    :entity  (if (= source :entity)
+                                               (-> e .-target .-value)
+                                               (:entity value))
+                                    :mapping (if (= source :mapping)
+                                               (-> e .-target .-value)
+                                               (:mapping value))}]))}]]))
 
      (for [[attr-name _attr-props schema] map-attrs]
        [attribute attr-name

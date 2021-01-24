@@ -39,11 +39,11 @@
    [input {:name        "entity"
            :placeholder "Entity"
            :value       (:entity value)
-           :on-change   on-change}]
+           :on-change   (partial on-change :entity)}]
    [input {:name        "mapping"
            :placeholder "Mapping"
            :value       (:mapping value)
-           :on-change   on-change}]
+           :on-change   (partial on-change :mapping)}]
    [reset-icon]])
 
 (defn object-subattr [attr {:keys [value on-change]}]

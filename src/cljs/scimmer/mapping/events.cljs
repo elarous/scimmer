@@ -30,13 +30,12 @@
                (rf/assoc-effect context :db new-db)))))
 
 (rf/reg-event-db
-  :mapping/>set-single-attr
-  [rf/debug single-attr-interceptor]
-  (fn [single-attrs [_ attr]]
-    (conj single-attrs [:hope {:scimmer.services.schema/mapping :go/here} {:type int?}])))
-
-
-
-
-
+  :mapping/>update-single-attr
+  [single-attr-interceptor]
+  (fn [single-attrs [_ {:keys [name entity mapping]}]]
+    (let [target-idx (->> single-attrs
+                          (map-indexed (fn [idx itm] [idx itm]))
+                          (some (fn [[idx [attr-name _props _schema]]] (and (= name attr-name) idx))))]
+      (assoc-in single-attrs [target-idx 1 :scimmer.services.schema/mapping]
+                (keyword mapping entity)))))
 
