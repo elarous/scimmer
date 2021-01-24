@@ -8,6 +8,7 @@
     "styled-components": "^5.2.1"
   },
   "devDependencies": {
-    "shadow-cljs": "^2.11.11"
+    "shadow-cljs": "^2.11.11",
+    "xmlhttprequest": "1.8.0"
   }
 }

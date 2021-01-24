@@ -12,46 +12,24 @@
     [reitit.core :as reitit]
     [reitit.frontend.easy :as rfe]
     ["grommet" :refer [Grommet Button]]
-    [clojure.string :as string])
+    [clojure.string :as string]
+    [scimmer.mapping.views :refer [mapping-page]]
+    [herb.core :refer [<class]]
+    [scimmer.styles :as stl]
+    [scimmer.nav.views :refer [navbar]])
   (:import goog.History))
-
-(defn nav-link [uri title page]
-  [:a.navbar-item
-   {:href  uri
-    :class (when (= page @(rf/subscribe [:common/page])) :is-active)}
-   title])
-
-(defn navbar []
-  (r/with-let [expanded? (r/atom false)]
-              [:nav.navbar.is-info>div.container
-               [:div.navbar-brand
-                [:a.navbar-item {:href "/" :style {:font-weight :bold}} "scimmer"]
-                [:span.navbar-burger.burger
-                 {:data-target :nav-menu
-                  :on-click    #(swap! expanded? not)
-                  :class       (when @expanded? :is-active)}
-                 [:span] [:span] [:span]]]
-               [:div#nav-menu.navbar-menu
-                {:class (when @expanded? :is-active)}
-                [:div.navbar-start
-                 [nav-link "#/" "Home" :home]
-                 [nav-link "#/about" "About" :about]]]]))
 
 (defn about-page []
   [:section.section>div.container>div.content
    [:img {:src "/img/warning_clojure.png"}]])
 
 (defn home-page []
-  [:section.section>div.container>div.content
-   [:> Button {:primary  true
-               :label    "Grommet button"
-               :on-click #(js/alert "button clicked")}]])
+  [mapping-page])
 
 
 (defn page []
   (if-let [page @(rf/subscribe [:common/page])]
-    [:div
-     [:h1]
+    [:div {:class (<class stl/page-style)}
      [navbar]
      [page]]))
 
@@ -60,7 +38,7 @@
 
 (def router
   (reitit/router
-    [["/" {:name        :home
+    [["/" {:name        :mapping
            :view        #'home-page
            :controllers [{:start (fn [_] (rf/dispatch [:page/init-home]))}]}]
      ["/about" {:name :about
