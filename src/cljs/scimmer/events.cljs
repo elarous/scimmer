@@ -3,9 +3,15 @@
     [re-frame.core :as rf]
     [ajax.core :as ajax]
     [reitit.frontend.easy :as rfe]
-    [reitit.frontend.controllers :as rfc]))
+    [reitit.frontend.controllers :as rfc]
+    [scimmer.app-db :as app-db]))
+
 
 ;;dispatchers
+
+(rf/reg-event-db
+  :initialize-db
+  (fn [db _] app-db/db))
 
 (rf/reg-event-db
   :common/navigate
