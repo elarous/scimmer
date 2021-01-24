@@ -38,6 +38,36 @@
    [input "mapping" "Mapping"]
    [reset-icon]])
 
+(defn object-attr []
+  [:div {:class (<class stl/object-attr)}
+   [:div {:class (<class stl/object-subattr)}
+    [:div {:class (<class stl/object-attr-title)} "firstName"]
+    [:div {:class (<class stl/object-subattr-inputs)}
+     [input "entity" "Entity"]
+     [input "mapping" "Mapping"]
+     [reset-icon]]]
+
+   [:div {:class (<class stl/object-subattr)}
+    [:div {:class (<class stl/object-attr-title)} "firstName"]
+    [:div {:class (<class stl/object-subattr-inputs)}
+     [input "entity" "Entity"]
+     [input "mapping" "Mapping"]
+     [reset-icon]]]])
+
+(defn array-attr []
+  [:div {:class (<class stl/array-attr)}
+   [:div {:class (<class stl/array-attr-inputs)}
+    [input "entity" "Entity"]
+    [input "type" "Type"]
+    [input "mapping" "Mapping"]
+    [reset-icon]]
+
+   [:div {:class (<class stl/array-attr-inputs)}
+    [input "entity" "Entity"]
+    [input "type" "Type"]
+    [input "mapping" "Mapping"]
+    [reset-icon]]])
+
 (defn attribute [body]
   (r/with-let [collapsed? (r/atom false)]
     [:div {:class (<class stl/container)}

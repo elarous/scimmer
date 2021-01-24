@@ -4,6 +4,7 @@
   {:primary        "#5BC0BE"
    :highlight      "#00B7D5"
    :secondary      "#e75a7c"
+   :tertiary      "#8FC47A"
    :text-primary   "#0B132B"
    :text-secondary "#1C2541"
    :bg-dark        "#595F72"

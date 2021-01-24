@@ -20,20 +20,47 @@
 
 
 (defn body []
-  {})
+  {:padding      (sizes 1)
+   :margin-left  (sizes 2)
+   :margin-right (sizes 2)})
 
 (defn single-attr []
   {:display         "flex"
    :justify-content "space-between"
    :align-items     "center"
-   :border-radius   (sizes 1)
-   :padding         (sizes 1)
-   :margin-left     (sizes 2)
-   :margin-right    (sizes 2)})
+   :border-radius   (sizes 1)})
+
+(defn object-attr []
+  {:display        "flex"
+   :flex-direction "column"})
+
+(defn object-attr-title []
+  {:color       (:tertiary colors)
+   :font-weight "bold"})
+
+(defn object-subattr []
+  {:display        "flex"
+   :flex-direction "column"
+   :margin-top     (sizes 1)
+   :margin-bottom  (sizes 1)})
+
+(defn object-subattr-inputs []
+  {:display         "flex"
+   :justify-content "space-between"
+   :align-items     "center"})
+
+(defn array-attr []
+  {:display "flex"
+   :flex-direction "column"})
+
+(defn array-attr-inputs []
+  {:display "flex"
+   :justify-content "space-between"
+   :align-items "center"})
 
 (defn attr-form-field []
   {:border    "none !important"
-   :flex 1
+   :flex      1
    :outline   "none"
    :font-size (sizes 0.2)
    :margin    (sizes 1)})
