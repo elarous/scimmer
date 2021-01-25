@@ -2,8 +2,8 @@
   (:require [scimmer.services.schema :as sch]
             [malli.provider :as mp]
             [malli.util :as mu]
-            [scimmer.services.resource :as res]
-            [clojure.data.json :as json]))
+            [scimmer.services.resource :as res]))
+
 
 (defn keyword->name [ns-k]
   (some-> ns-k name keyword))
@@ -84,9 +84,7 @@
 (comment
   (build-resource (mu/to-map-syntax sch/full-user) user [] {:user {:age 22}} {})
   (build-resource (mu/to-map-syntax sch/user-schema) user [] {:user {:age 22}} {})
-  (require '[clojure.data.json :as json])
 
-  (println (json/write-str user))
   (def user
     {:id           "0ea136ad-061d-45f1-8d92-db5627a156f2"
      :externalId   "8a61fbf4-543c-4ed2-94a4-74838d6ba8ef"
