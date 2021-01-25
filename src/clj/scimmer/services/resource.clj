@@ -80,6 +80,6 @@
       :job_description        ""}
      :custom_fields
      {:phone_number "+111111111"
-      :mobile_number "+222222222"}})
+      :mobile_number "+222222222"}}))
 
-  )
+
