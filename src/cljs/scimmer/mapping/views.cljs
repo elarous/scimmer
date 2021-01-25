@@ -52,9 +52,24 @@
      (for [[attr-name _attr-props schema] map-attrs]
        [attribute attr-name
         [object-attr
-         (for [[attr-name attr-props _schema] (:children schema)]
-           ^{:keys attr-name}
-           [object-subattr attr-name {:value (get-entity-mapping (:scimmer.services.schema/mapping attr-props))}])]])
+         (for [[subattr-name attr-props _schema] (:children schema)]
+           (let [value (get-entity-mapping (:scimmer.services.schema/mapping attr-props))]
+             ^{:keys attr-name}
+             [object-subattr
+              subattr-name
+              {:value     value
+               :attr-name attr-name
+               :on-change (fn [source e]
+                            (rf/dispatch [:mapping/>update-map-attr
+                                          {:name    attr-name
+                                           :subattr subattr-name
+                                           :entity  (if (= source :entity)
+                                                      (-> e .-target .-value)
+                                                      (:entity value))
+                                           :mapping (if (= source :mapping)
+                                                      (-> e .-target .-value)
+                                                      (:mapping value))}]))}]))]])
+
 
      (for [[attr-name _attr-props schema] array-attrs]
        [attribute attr-name

@@ -6,8 +6,13 @@
     [reitit.frontend.controllers :as rfc]
     [scimmer.app-db :as app-db]))
 
-(defn single-attr-filter [[_name _props schema]]
+;; functions to filter out other kinds of attrs
+(defn single-attr-remove [[_name _props schema]]
   (contains? #{:vector :map} (:type schema)))
+
+(defn map-attr-remove [[_name _props schema]]
+  (not= (:type schema) :map))
+;;
 
 (defn attr-interceptor [filtering-fn]
   (rf/->interceptor
@@ -32,11 +37,25 @@
 
 (rf/reg-event-db
   :mapping/>update-single-attr
-  [(attr-interceptor single-attr-filter)]
+  [(attr-interceptor single-attr-remove)]
   (fn [single-attrs [_ {:keys [name entity mapping]}]]
     (let [target-idx (->> single-attrs
                           (map-indexed (fn [idx itm] [idx itm]))
                           (some (fn [[idx [attr-name _props _schema]]] (and (= name attr-name) idx))))]
       (assoc-in single-attrs [target-idx 1 :scimmer.services.schema/mapping]
+                (keyword mapping entity)))))
+
+(rf/reg-event-db
+  :mapping/>update-map-attr
+  [(attr-interceptor map-attr-remove)]
+  (fn [map-attrs [_ {:keys [name subattr entity mapping]}]]
+    (let [target-idx (->> map-attrs
+                          (map-indexed (fn [idx itm] [idx itm]))
+                          (some (fn [[idx [attr-name _props _schema]]] (and (= name attr-name) idx))))
+          children (-> map-attrs (nth target-idx) (nth 2) :children)
+          target-subattr-idx (->> children
+                                  (map-indexed (fn [idx itm] [idx itm]))
+                                  (some (fn [[idx [attr-name _props _schema]]] (and (= subattr attr-name) idx))))]
+      (assoc-in map-attrs [target-idx 2 :children target-subattr-idx 1 :scimmer.services.schema/mapping]
                 (keyword mapping entity)))))
 

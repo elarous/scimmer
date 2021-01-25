@@ -46,18 +46,18 @@
            :on-change   (partial on-change :mapping)}]
    [reset-icon]])
 
-(defn object-subattr [attr {:keys [value on-change]}]
+(defn object-subattr [subattr {:keys [value on-change]}]
   [:div {:class (<class stl/object-subattr)}
-   [:div {:class (<class stl/object-attr-title)} (name attr)]
+   [:div {:class (<class stl/object-attr-title)} (name subattr)]
    [:div {:class (<class stl/object-subattr-inputs)}
     [input {:name "entity"
             :placeholder "Entity"
             :value (:entity value)
-            :on-change on-change}]
+            :on-change (partial on-change :entity)}]
     [input {:name "mapping"
             :placeholder "Mapping"
             :value (:mapping value)
-            :on-change on-change}]
+            :on-change (partial on-change :mapping)}]
     [reset-icon]]])
 
 (defn object-attr [& body]
