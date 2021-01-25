@@ -34,7 +34,7 @@
 
      (for [[attr-name attr-props _schema] single-attrs]
        (let [value (get-entity-mapping (:scimmer.services.schema/mapping attr-props))]
-         ^{:keys attr-name}
+         ^{:key attr-name}
          [attribute attr-name
           [single-attr
            {:value value
@@ -50,11 +50,12 @@
                                                (:mapping value))}]))}]]))
 
      (for [[attr-name _attr-props schema] map-attrs]
+       ^{:key attr-name}
        [attribute attr-name
         [object-attr
          (for [[subattr-name attr-props _schema] (:children schema)]
            (let [value (get-entity-mapping (:scimmer.services.schema/mapping attr-props))]
-             ^{:keys attr-name}
+             ^{:key (str attr-name "_" subattr-name)}
              [object-subattr
               subattr-name
               {:value     value
@@ -72,21 +73,44 @@
 
 
      (for [[attr-name _attr-props schema] array-attrs]
+       ^{:key (str attr-name (:type schema))}
        [attribute attr-name
         (let [arr-schema (-> schema :children first :children)]
           [array-attr
-           (for [[attr-name _props children] arr-schema]
-             ^{:keys attr-name}
-             [array-attr-item {:value (merge {:type attr-name}
-                                             (-> (get-mapping-attr-item children)
-                                                 get-entity-mapping))}])])])]))
+           (for [[i [type _props children]] (doall (map-indexed vector arr-schema))]
+             (let [value (merge {:type type}
+                                (-> (get-mapping-attr-item children)
+                                    get-entity-mapping))]
+               ^{:key type}
+               [array-attr-item
+                {:value value
+                 :on-change (fn [source e]
+                              (js/console.log "source " source " e: " e)
+                              (rf/dispatch [:mapping/>update-array-attr
+                                            {:name   attr-name
+                                             :idx    i
+                                             :entity (if (= source :entity)
+                                                       (-> e .-target .-value)
+                                                       (:entity value))
+                                             :mapping (if (= source :mapping)
+                                                        (-> e .-target .-value)
+                                                        (:mapping value))
+                                             :type (if (= source :type)
+                                                     (-> e .-target .-value keyword)
+                                                     (:type value))}]))}]))])])]))
+
+
+
 
 (defn mapping-page []
   [:div {:class (<class stl/container)}
    [:> Grommet {:theme (clj->js stl/grommet-theme)
                 :class (<class stl/grommet)}
     [:div {:class (<class stl/grid)}
+     ^{:key "schema-card"}
      [schema-card]
+     ^{:key "resource-card"}
      [card {} [header "Resource" "User"]]
+     ^{:key "entities-card"}
      [card {} [header "Entities" "User"]]]]])
 

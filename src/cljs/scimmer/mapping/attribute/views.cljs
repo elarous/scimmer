@@ -24,12 +24,10 @@
 
 (defn input [{:keys [name label value on-change]}]
   [:> FormField {:name     name
-                 :html-for "text-input"
                  :class    (<class stl/attr-form-field)}
    [:> TextInput {:placeholder label
                   :size        "small"
                   :class       (<class stl/attr-input)
-                  :id          "text-input"
                   :name        name
                   :value       value
                   :on-change   on-change}]])
@@ -50,35 +48,34 @@
   [:div {:class (<class stl/object-subattr)}
    [:div {:class (<class stl/object-attr-title)} (name subattr)]
    [:div {:class (<class stl/object-subattr-inputs)}
-    [input {:name "entity"
+    [input {:name        "entity"
             :placeholder "Entity"
-            :value (:entity value)
-            :on-change (partial on-change :entity)}]
-    [input {:name "mapping"
+            :value       (:entity value)
+            :on-change   (partial on-change :entity)}]
+    [input {:name        "mapping"
             :placeholder "Mapping"
-            :value (:mapping value)
-            :on-change (partial on-change :mapping)}]
+            :value       (:mapping value)
+            :on-change   (partial on-change :mapping)}]
     [reset-icon]]])
 
 (defn object-attr [& body]
   [:div {:class (<class stl/object-attr)} body])
 
-(defn array-attr-item [{:keys [value]}]
-  (let [{:keys [entity on-change type mapping]} value]
-    (js/console.log entity on-change type mapping)
+(defn array-attr-item [{:keys [value on-change]}]
+  (let [{:keys [entity type mapping]} value]
     [:div {:class (<class stl/array-attr-inputs)}
      [input {:name        "entity"
              :placeholder "Entity"
              :value       entity
-             :on-change   on-change}]
+             :on-change   (partial on-change :entity)}]
      [input {:name        "type"
              :placeholder "Type"
              :value       type
-                          :on-change on-change}]
+             :on-change   (partial on-change :type)}]
      [input {:name        "mapping"
              :placeholder "Mapping"
              :value       mapping
-             :on-change   on-change}]
+             :on-change   (partial on-change :mapping)}]
      [reset-icon]]))
 
 (defn array-attr [& body]

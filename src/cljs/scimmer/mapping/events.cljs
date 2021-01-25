@@ -12,6 +12,9 @@
 
 (defn map-attr-remove [[_name _props schema]]
   (not= (:type schema) :map))
+
+(defn array-attr-remove [[_name _props schema]]
+  (not= (:type schema) :vector))
 ;;
 
 (defn attr-interceptor [filtering-fn]
@@ -58,4 +61,17 @@
                                   (some (fn [[idx [attr-name _props _schema]]] (and (= subattr attr-name) idx))))]
       (assoc-in map-attrs [target-idx 2 :children target-subattr-idx 1 :scimmer.services.schema/mapping]
                 (keyword mapping entity)))))
+
+(rf/reg-event-db
+  :mapping/>update-array-attr
+  [(attr-interceptor array-attr-remove)]
+  (fn [array-attrs [_ {:keys [name idx mapping entity type]}]]
+    (let [target-idx (->> array-attrs
+                          (map-indexed (fn [idx itm] [idx itm]))
+                          (some (fn [[idx [attr-name _props _schema]]] (and (= name attr-name) idx))))]
+      (-> array-attrs
+          (assoc-in [target-idx 2 :children 0 :children idx 0] type)
+          (assoc-in
+            [target-idx 2 :children 0 :children idx 2 :children 1 1 :scimmer.services.schema/mapping]
+            (keyword mapping entity))))))
 
