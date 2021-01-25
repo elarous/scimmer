@@ -99,8 +99,13 @@
                                                      (-> e .-target .-value keyword)
                                                      (:type value))}]))}]))])])]))
 
+(defn resource-card []
+  [card {}
+   [header "Resource" "User"]
+   [:textarea {:value "hi"}]])
 
-
+(defn entities-card []
+  [card {} [header "Entities" "User"]])
 
 (defn mapping-page []
   [:div {:class (<class stl/container)}
@@ -110,7 +115,8 @@
      ^{:key "schema-card"}
      [schema-card]
      ^{:key "resource-card"}
-     [card {} [header "Resource" "User"]]
+     [resource-card]
      ^{:key "entities-card"}
-     [card {} [header "Entities" "User"]]]]])
+     [entities-card]]]])
+
 

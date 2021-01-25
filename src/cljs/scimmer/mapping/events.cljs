@@ -4,7 +4,8 @@
     [ajax.core :as ajax]
     [reitit.frontend.easy :as rfe]
     [reitit.frontend.controllers :as rfc]
-    [scimmer.app-db :as app-db]))
+    [scimmer.app-db :as app-db]
+    [scimmer.services.mapping :refer [build-resource]]))
 
 ;; functions to filter out other kinds of attrs
 (defn single-attr-remove [[_name _props schema]]
@@ -75,3 +76,9 @@
             [target-idx 2 :children 0 :children idx 2 :children 1 1 :scimmer.services.schema/mapping]
             (keyword mapping entity))))))
 
+(rf/reg-event-db
+  :mapping/>resource->entities
+  (fn [db [_ _]]
+    (let [schema (:mapping db)
+          resource (:resource db)]
+      (assoc db :entities (build-resource schema resource [] {} {})))))
