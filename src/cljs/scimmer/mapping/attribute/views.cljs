@@ -1,5 +1,6 @@
 (ns scimmer.mapping.attribute.views
   (:require [reagent.core :as r]
+            [re-frame.core :as rf]
             [herb.core :refer [<class join]]
             ["grommet" :refer [Grommet Button Heading Select Grid Box TextInput FormField]]
             [scimmer.mapping.attribute.styles :as stl]))
@@ -23,14 +24,20 @@
 ;;
 
 (defn input [{:keys [name label value on-change]}]
-  [:> FormField {:name     name
-                 :class    (<class stl/attr-form-field)}
-   [:> TextInput {:placeholder label
-                  :size        "small"
-                  :class       (<class stl/attr-input)
-                  :name        name
-                  :value       value
-                  :on-change   on-change}]])
+  (r/with-let [timeout-duration 500
+               timeout-fn #(rf/dispatch [:mapping/>resource->entities])
+               timeout (r/atom (js/setTimeout timeout-fn timeout-duration))]
+    [:> FormField {:name  name
+                   :class (<class stl/attr-form-field)}
+     [:> TextInput {:placeholder   label
+                    :size          "small"
+                    :class         (<class stl/attr-input)
+                    :name          name
+                    :default-value value
+                    :on-change     (fn [e]
+                                     (js/clearTimeout)
+                                     (reset! timeout (js/setTimeout timeout-fn timeout-duration))
+                                     (on-change e))}]]))
 
 (defn single-attr [{:keys [value on-change]}]
   [:div {:class (<class stl/single-attr)}

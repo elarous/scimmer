@@ -1,6 +1,6 @@
 (ns scimmer.mapping.views
   (:require ["react" :as re]
-            [reagent.core :as reagent]
+            [reagent.core :as r]
             [re-frame.core :as rf]
             [herb.core :refer [<class]]
             ["grommet" :refer [Grommet Button Heading Select Grid Box TextInput FormField]]
@@ -83,29 +83,43 @@
                                     get-entity-mapping))]
                ^{:key type}
                [array-attr-item
-                {:value value
+                {:value     value
                  :on-change (fn [source e]
                               (js/console.log "source " source " e: " e)
                               (rf/dispatch [:mapping/>update-array-attr
-                                            {:name   attr-name
-                                             :idx    i
-                                             :entity (if (= source :entity)
-                                                       (-> e .-target .-value)
-                                                       (:entity value))
+                                            {:name    attr-name
+                                             :idx     i
+                                             :entity  (if (= source :entity)
+                                                        (-> e .-target .-value)
+                                                        (:entity value))
                                              :mapping (if (= source :mapping)
                                                         (-> e .-target .-value)
                                                         (:mapping value))
-                                             :type (if (= source :type)
-                                                     (-> e .-target .-value keyword)
-                                                     (:type value))}]))}]))])])]))
+                                             :type    (if (= source :type)
+                                                        (-> e .-target .-value keyword)
+                                                        (:type value))}]))}]))])])]))
 
 (defn resource-card []
-  [card {}
-   [header "Resource" "User"]
-   [:textarea {:value "hi"}]])
+  (r/with-let [contents (r/atom "")
+               timeout-duration 500
+               timeout-fn #(rf/dispatch [:mapping/>set-resource @contents])
+               timeout (r/atom (js/setTimeout timeout-fn timeout-duration))]
+    [card {:body-class (<class stl/resource-card-body)}
+     [header "Resource" "User"]
+     [:textarea {:class     (<class stl/resource-textarea)
+                 :default-value
+                            (.stringify js/JSON (clj->js @(rf/subscribe [:mapping/resource])) nil 2)
+                 :on-change (fn [e]
+                              (js/clearTimeout @timeout)
+                              (reset! timeout (js/setTimeout timeout-fn timeout-duration))
+                              (reset! contents (-> e .-target .-value)))}]]))
 
 (defn entities-card []
-  [card {} [header "Entities" "User"]])
+  [card {}
+   [header "Entities" "User"]
+   [:pre {:class (<class stl/entities)}
+    (.stringify js/JSON (clj->js @(rf/subscribe [:mapping/entities])) nil 2)]])
+
 
 (defn mapping-page []
   [:div {:class (<class stl/container)}

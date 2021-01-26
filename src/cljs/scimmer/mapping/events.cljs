@@ -76,9 +76,17 @@
             [target-idx 2 :children 0 :children idx 2 :children 1 1 :scimmer.services.schema/mapping]
             (keyword mapping entity))))))
 
+;;
 (rf/reg-event-db
   :mapping/>resource->entities
   (fn [db [_ _]]
     (let [schema (:mapping db)
           resource (:resource db)]
       (assoc db :entities (build-resource schema resource [] {} {})))))
+;;
+
+(rf/reg-event-fx
+  :mapping/>set-resource
+  (fn [{db :db} [_ new-value]]
+    {:db (assoc db :resource (js->clj (.parse js/JSON new-value) :keywordize-keys true))
+     :dispatch [:mapping/>resource->entities]}))

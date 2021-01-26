@@ -4,8 +4,11 @@
     [ajax.core :as ajax]
     [reitit.frontend.easy :as rfe]
     [reitit.frontend.controllers :as rfc]
+    [clojure.edn :as edn]
+    [clojure.data :as data]
     [scimmer.app-db :as app-db]))
 
+;; Schema subscriptions
 (rf/reg-sub
   :mapping/all-attrs
   (fn [db _]
@@ -30,3 +33,14 @@
   (fn [all-attrs]
     (filterv (fn [[_name _props schema]] (= :vector (:type schema))) all-attrs)))
 
+;; Resource subscriptions
+(rf/reg-sub
+  :mapping/resource
+  (fn [db _]
+    (:resource db)))
+
+;; Entities subscriptions
+(rf/reg-sub
+  :mapping/entities
+  (fn [db _]
+    (:entities db)))

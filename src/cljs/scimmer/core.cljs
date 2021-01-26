@@ -26,7 +26,6 @@
 (defn home-page []
   [mapping-page])
 
-
 (defn page []
   (if-let [page @(rf/subscribe [:common/page])]
     [:div {:class (<class stl/page-style)}
@@ -38,8 +37,8 @@
 
 (def router
   (reitit/router
-    [["/" {:name        :mapping
-           :view        #'home-page
+    [["/" {:name :mapping
+           :view #'home-page
            #_:controllers #_[{:start (fn [_] (rf/dispatch [:page/init-home]))}]}]
      ["/about" {:name :about
                 :view #'about-page}]]))
