@@ -77,7 +77,7 @@
              :on-change   (partial on-change :entity)}]
      [input {:name        "type"
              :placeholder "Type"
-             :value       type
+             :value       (name type)
              :on-change   (partial on-change :type)}]
      [input {:name        "mapping"
              :placeholder "Mapping"

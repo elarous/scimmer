@@ -72,6 +72,7 @@
                           (some (fn [[idx [attr-name _props _schema]]] (and (= name attr-name) idx))))]
       (-> array-attrs
           (assoc-in [target-idx 2 :children 0 :children idx 0] type)
+          (assoc-in [target-idx 2 :children 0 :children idx 2 :children 0 2 :children 0] type)
           (assoc-in
             [target-idx 2 :children 0 :children idx 2 :children 1 1 :scimmer.services.schema/mapping]
             (keyword mapping entity))))))

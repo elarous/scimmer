@@ -81,11 +81,10 @@
              (let [value (merge {:type type}
                                 (-> (get-mapping-attr-item children)
                                     get-entity-mapping))]
-               ^{:key type}
+               ^{:key i}
                [array-attr-item
                 {:value     value
                  :on-change (fn [source e]
-                              (js/console.log "source " source " e: " e)
                               (rf/dispatch [:mapping/>update-array-attr
                                             {:name    attr-name
                                              :idx     i
