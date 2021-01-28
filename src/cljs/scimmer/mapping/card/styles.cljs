@@ -20,17 +20,24 @@
   {:color (:highlight colors)})
 
 (defn header []
-  {:background             (:grey-1 colors)
-   :display                "flex"
-   :justify-content        "center"
-   :align-items            "center"
-   :border-top-left-radius (sizes 1)
+  {:background              (:grey-1 colors)
+   :display                 "flex"
+   :justify-content         "center"
+   :align-items             "center"
+   :border-top-left-radius  (sizes 1)
    :border-top-right-radius (sizes 1)
-   :padding                (sizes 2)})
+   :padding                 (sizes 2)})
+
+(defn body []
+  {:flex     1
+   :overflow "auto"})
 
 (defn card []
-  {:border-radius (sizes 1)
-   :box-shadow    (:medium shadows)
-   :background    "#fff"})
+  {:border-radius  (sizes 1)
+   :height         "100%"
+   :box-shadow     (:medium shadows)
+   :display        "flex"
+   :flex-direction "column"
+   :background     "#fff"})
 
 

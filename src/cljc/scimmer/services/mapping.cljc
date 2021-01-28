@@ -2,8 +2,8 @@
   (:require [scimmer.services.schema :as sch]
             [malli.provider :as mp]
             [malli.util :as mu]
-            [scimmer.services.resource :as res]
-            [clojure.data.json :as json]))
+            [scimmer.services.resource :as res]))
+
 
 (defn keyword->name [ns-k]
   (some-> ns-k name keyword))
@@ -55,8 +55,10 @@
       (if (empty? children)
         result
         (recur (rest children)
-               (merge-with into result
-                           (build-resource (first children) resource path result opts)))))))
+               (if (= (ffirst children) :type)
+                 result
+                 (merge-with into result
+                             (build-resource (first children) resource path result opts))))))))
 
 (defmethod build-resource :vector [[name props contents] resource lookup-path result opts]
   (let [children-result
@@ -68,12 +70,29 @@
     (merge-with into result children-result)))
 
 (defmethod build-resource :multi-no-name [contents resource lookup-path result opts]
-  (let [children-result (map-indexed #(build-resource %2
-                                                      resource
-                                                      (conj lookup-path %1)
-                                                      result
-                                                      opts)
-                                     (:children contents))]
+  ;; zip items together based on their dispatch key (mostly `:type`)
+  (let [dispatch-key (get-in contents [:properties :dispatch])
+        ;; This function will find the index in the resource, that has a a dispatch-key
+        ;; equals to the value of `target`
+        ;; for example:
+        ;; (def resource [{:value "first" :type "mobile"} {:value "second" :type "work}])
+        ;; (def target "work")
+        ;; (def dispatch-key :type)
+        ;; then: (index-in-resource target) => 1
+        index-in-resource (fn [target]
+                            (->> (get-in resource lookup-path)
+                                 (map-indexed (fn [idx item] [idx item]))
+                                 (some (fn [[idx item]]
+                                         (and (= (get item dispatch-key) target) idx)))))
+        ;; recursive call to build-resource that puts results into a vector that can be reduced
+        ;; the path param (3rd argument) is the path to the value in the resource
+        ;; (see the comment above)
+        children-result (map #(build-resource %
+                                              resource
+                                              (->> (first %) name (index-in-resource) (conj lookup-path))
+                                              result
+                                              opts)
+                             (:children contents))]
     (merge-with into result
                 (apply (partial merge-with into) children-result))))
 
@@ -84,9 +103,7 @@
 (comment
   (build-resource (mu/to-map-syntax sch/full-user) user [] {:user {:age 22}} {})
   (build-resource (mu/to-map-syntax sch/user-schema) user [] {:user {:age 22}} {})
-  (require '[clojure.data.json :as json])
 
-  (println (json/write-str user))
   (def user
     {:id           "0ea136ad-061d-45f1-8d92-db5627a156f2"
      :externalId   "8a61fbf4-543c-4ed2-94a4-74838d6ba8ef"
@@ -94,9 +111,10 @@
      :locale       "en"
      :name         {:familyName "El Arbaoui"
                     :givenName  "Oussama"
-                    :formatted "Oussama-EL-Arbaoui"}
+                    :formatted  "Oussama-EL-Arbaoui"}
      :displayName  "Kamaro"
-     :emails       [{:value "work@work.com" :type "work" :primary true}
+     :emails       [#_{:value "work@work.com" :type "work" :primary true}
+                    {:value "another@another.com" :type "another"}
                     {:value "mobile@mobile.com" :type "mobile"}]
      :active       true
      :title        "Engineer"

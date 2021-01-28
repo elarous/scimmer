@@ -69,3 +69,9 @@
 
 (def user-schema-map (mu/to-map-syntax user-schema))
 
+(comment
+  (mu/to-map-syntax full-user))
+
+
+
+

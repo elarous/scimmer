@@ -6,6 +6,7 @@
    :background            (:bg-darker colors)
    :height                "100%"
    :width                 "100%"
+   :overflow "hidden"
    :position              "absolute"
    :top                   "0"
    :left                  "0"

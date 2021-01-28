@@ -35,25 +35,33 @@
       (is (= (get-in entities [:user :name]) (:given-name vls)))))
 
   (testing "extracting an attribute with a vector as a value"
-    (let [vls {:work-number "+12121212"
-               :mobile-number "+34343434"}
-          resource {:phoneNumbers [{:value (:work-number vls)  :type "work"}
-                                   {:value (:mobile-number vls) :type "mobile"}]}
-          entities (m/build-resource
-                    (mu/to-map-syntax
+    (testing "when all types exists"
+      (let [vls {:work-number   "+0000-work-0000"
+                 :mobile-number "+11111-mobile-1111"}
+            schema (mu/to-map-syntax
                      [:map
                       [:phoneNumbers
                        [:vector
                         [:multi {:dispatch :type}
                          [:work [:map
                                  [:type [:= :work]]
-                                 [:value {::sch/mapping :user/work_number}  string?]]]
+                                 [:value {::sch/mapping :user/work_number} string?]]]
                          [:mobile [:map
                                    [:type [:= :mobile]]
-                                   [:value {::sch/mapping :user/mobile_number} string?]]]]]]])
-                    resource [] {} {})]
-      (is (contains? entities :user))
-      (is (= (get-in entities [:user :work_number]) (:work-number vls)))
-      (is (= (get-in entities [:user :mobile_number]) (:mobile-number vls))))))
+                                   [:value {::sch/mapping :user/mobile_number} string?]]]]]]])]
 
+        (testing "when the order of types in the schema is the same as the resource"
+          (let [resource {:phoneNumbers [{:value (:work-number vls) :type "work"}
+                                         {:value (:mobile-number vls) :type "mobile"}]}
+                entities (m/build-resource schema resource [] {} {})]
+            (is (contains? entities :user))
+            (is (= (get-in entities [:user :work_number]) (:work-number vls)))
+            (is (= (get-in entities [:user :mobile_number]) (:mobile-number vls)))))
+        (testing "when the order of types in the schema is no the same as the resource"
+          (let [resource {:phoneNumbers [{:value (:mobile-number vls) :type "mobile"}
+                                         {:value (:work-number vls) :type "work"}]}
+                entities (m/build-resource schema resource [] {} {})]
+            (is (contains? entities :user))
+            (is (= (get-in entities [:user :work_number]) (:work-number vls)))
+            (is (= (get-in entities [:user :mobile_number]) (:mobile-number vls)))))))))
 
