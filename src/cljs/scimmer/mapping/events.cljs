@@ -39,13 +39,20 @@
                    new-db (update-in db-without-old-attrs [:mapping :children] concat new-attrs-vec)]
                (rf/assoc-effect context :db new-db)))))
 
+;; helper functions
+(defn get-attr-idx [attrs name]
+  (->> attrs
+       (map-indexed (fn [idx itm] [idx itm]))
+       (some (fn [[idx [attr-name _props _schema]]] (and (= name attr-name) idx)))))
+;;
+
+
+
 (rf/reg-event-db
   :mapping/>update-single-attr
   [(attr-interceptor single-attr-remove)]
   (fn [single-attrs [_ {:keys [name entity mapping]}]]
-    (let [target-idx (->> single-attrs
-                          (map-indexed (fn [idx itm] [idx itm]))
-                          (some (fn [[idx [attr-name _props _schema]]] (and (= name attr-name) idx))))]
+    (let [target-idx (get-attr-idx single-attrs name)]
       (assoc-in single-attrs [target-idx 1 :scimmer.services.schema/mapping]
                 (keyword mapping entity)))))
 
@@ -53,13 +60,9 @@
   :mapping/>update-map-attr
   [(attr-interceptor map-attr-remove)]
   (fn [map-attrs [_ {:keys [name subattr entity mapping]}]]
-    (let [target-idx (->> map-attrs
-                          (map-indexed (fn [idx itm] [idx itm]))
-                          (some (fn [[idx [attr-name _props _schema]]] (and (= name attr-name) idx))))
+    (let [target-idx (get-attr-idx map-attrs name)
           children (-> map-attrs (nth target-idx) (nth 2) :children)
-          target-subattr-idx (->> children
-                                  (map-indexed (fn [idx itm] [idx itm]))
-                                  (some (fn [[idx [attr-name _props _schema]]] (and (= subattr attr-name) idx))))]
+          target-subattr-idx (get-attr-idx children subattr)]
       (assoc-in map-attrs [target-idx 2 :children target-subattr-idx 1 :scimmer.services.schema/mapping]
                 (keyword mapping entity)))))
 
@@ -67,9 +70,7 @@
   :mapping/>update-array-attr
   [(attr-interceptor array-attr-remove)]
   (fn [array-attrs [_ {:keys [name idx mapping entity type]}]]
-    (let [target-idx (->> array-attrs
-                          (map-indexed (fn [idx itm] [idx itm]))
-                          (some (fn [[idx [attr-name _props _schema]]] (and (= name attr-name) idx))))]
+    (let [target-idx (get-attr-idx array-attrs name)]
       (-> array-attrs
           (assoc-in [target-idx 2 :children 0 :children idx 0] type)
           (assoc-in [target-idx 2 :children 0 :children idx 2 :children 0 2 :children 0] type)
@@ -89,5 +90,29 @@
 (rf/reg-event-fx
   :mapping/>set-resource
   (fn [{db :db} [_ new-value]]
-    {:db (assoc db :resource (js->clj (.parse js/JSON new-value) :keywordize-keys true))
+    {:db       (assoc db :resource (js->clj (.parse js/JSON new-value) :keywordize-keys true))
      :dispatch [:mapping/>resource->entities]}))
+
+;;
+(rf/reg-event-fx
+  :mapping/>set-attr
+  (fn [{db :db} [_ id name]]
+    (prn (str id) name)
+    (let [attrs (get-in db [:mapping :children])
+          idx (->> attrs
+                   (map-indexed (fn [idx itm] [idx itm]))
+                   (some (fn [[idx item]]
+                           (and (= id (-> item meta :id)) idx))))
+          new-target (vec (concat [(keyword name)]  (rest (nth attrs idx))))
+          new-attrs (map-indexed (fn [i item] (if (= i idx)
+                                                (with-meta new-target (meta item))
+                                                item)) attrs)]
+      {:db (assoc-in db [:mapping :children] (vec new-attrs))
+       :dispatch [:mapping/>resource->entities]})))
+
+(rf/reg-event-db
+  :mapping/>gen-keys
+  [(rf/path :mapping :children)]
+  (fn [mapping _]
+    (map #(with-meta % {:id (random-uuid)}) mapping)))
+

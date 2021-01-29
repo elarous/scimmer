@@ -12,12 +12,21 @@
    :font-family (:normal fonts)
    :font-size   (sizes 2)
    :color       (:primary colors)
-   :cursor      "pointer"
    :font-weight "bold"})
 
-(defn collapse-icon [collapsed?]
-  {:transform (if collapsed? "rotate(-90deg)" "none")})
+(defn head-input []
+  ^{:extend [head]
+    :pseudo {:hover  {:outline (str "1px solid " (:grey-3 colors))}
+             :focus {:outline (str "1px solid " (:grey-3 colors))}}}
 
+  {:border  "none"
+   :outline "none"})
+
+
+
+(defn collapse-icon [collapsed?]
+  {:cursor    "pointer"
+   :transform (if collapsed? "rotate(-90deg)" "none")})
 
 (defn body []
   {:padding      (sizes 1)
@@ -50,13 +59,13 @@
    :align-items     "center"})
 
 (defn array-attr []
-  {:display "flex"
+  {:display        "flex"
    :flex-direction "column"})
 
 (defn array-attr-inputs []
-  {:display "flex"
+  {:display         "flex"
    :justify-content "space-between"
-   :align-items "center"})
+   :align-items     "center"})
 
 (defn attr-form-field []
   {:border    "none !important"

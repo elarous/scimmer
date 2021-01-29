@@ -88,14 +88,21 @@
 (defn array-attr [& body]
   [:div {:class (<class stl/array-attr)} body])
 
+(defn attribute
+  ([name body]
+   (attribute name {} body))
+  ([name {:keys [on-change]} body]
+   (r/with-let [collapsed? (r/atom false)]
+     [:div {:class (<class stl/container)}
+      [:div {:class (<class stl/head)}
+       [:div {:on-click #(swap! collapsed? not)}
+        [collapse-icon {:collapsed? @collapsed?}]]
+       [:input {:class        (<class stl/head-input)
+                :defaultValue name
+                :on-change    on-change
+                :type         "text"}]]
 
-(defn attribute [name body]
-  (r/with-let [collapsed? (r/atom false)]
-    [:div {:class (<class stl/container)}
-     [:div {:class    (<class stl/head)
-            :on-click #(swap! collapsed? not)}
-      [collapse-icon {:collapsed? @collapsed?}]
-      [:div {} name]]
-     (when-not @collapsed?
-       [:div {:class (<class stl/body)} body])]))
+      (when-not @collapsed?
+        [:div {:class (<class stl/body)} body])])))
+
 

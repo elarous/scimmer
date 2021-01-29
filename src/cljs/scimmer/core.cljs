@@ -39,7 +39,7 @@
   (reitit/router
     [["/" {:name :mapping
            :view #'home-page
-           #_:controllers #_[{:start (fn [_] (rf/dispatch [:page/init-home]))}]}]
+           #_:controllers #_[{:start (fn [_] (rf/dispatch [:mapping/>gen-keys]))}]}]
      ["/about" {:name :about
                 :view #'about-page}]]))
 
@@ -57,6 +57,7 @@
 
 (defn init! []
   (rf/dispatch-sync [:initialize-db])
+  (rf/dispatch-sync [:mapping/>gen-keys])
   (start-router!)
   (ajax/load-interceptors!)
   (mount-components))
