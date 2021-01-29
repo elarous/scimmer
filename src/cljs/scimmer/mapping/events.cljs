@@ -17,7 +17,6 @@
 (defn array-attr-remove [[_name _props schema]]
   (not= (:type schema) :vector))
 ;;
-
 (defn attr-interceptor [filtering-fn]
   (rf/->interceptor
     :id :single-attr-interceptor
@@ -97,22 +96,53 @@
 (rf/reg-event-fx
   :mapping/>set-attr
   (fn [{db :db} [_ id name]]
-    (prn (str id) name)
     (let [attrs (get-in db [:mapping :children])
           idx (->> attrs
                    (map-indexed (fn [idx itm] [idx itm]))
                    (some (fn [[idx item]]
                            (and (= id (-> item meta :id)) idx))))
-          new-target (vec (concat [(keyword name)]  (rest (nth attrs idx))))
+          new-target (vec (concat [(keyword name)] (rest (nth attrs idx))))
           new-attrs (map-indexed (fn [i item] (if (= i idx)
                                                 (with-meta new-target (meta item))
                                                 item)) attrs)]
-      {:db (assoc-in db [:mapping :children] (vec new-attrs))
+      {:db       (assoc-in db [:mapping :children] (vec new-attrs))
+       :dispatch [:mapping/>resource->entities]})))
+
+(rf/reg-event-fx
+  :mapping/>set-sub-attr
+  (fn [{db :db} [_ attr-id sub-attr-id sub-attr]]
+    (let [attrs (get-in db [:mapping :children])
+          idx (->> attrs
+                   (map-indexed (fn [idx itm] [idx itm]))
+                   (some (fn [[idx item]]
+                           (and (= attr-id (-> item meta :id)) idx))))
+          sub-attrs (get-in (vec attrs) [idx 2 :children])
+          sub-attr-idx (->> sub-attrs
+                            (map-indexed (fn [idx itm] [idx itm]))
+                            (some (fn [[idx item]]
+                                    (and (= sub-attr-id (-> item meta :id)) idx))))
+          new-sub-attr (vec (concat [(keyword sub-attr)] (rest (nth sub-attrs sub-attr-idx))))
+          new-sub-attrs (map-indexed (fn [i item]
+                                       (if (= i sub-attr-idx)
+                                         (with-meta new-sub-attr (meta item))
+                                         item)) sub-attrs)]
+      {:db       (-> db
+                     (update-in [:mapping :children] vec)
+                     (assoc-in [:mapping :children idx 2 :children] (vec new-sub-attrs)))
        :dispatch [:mapping/>resource->entities]})))
 
 (rf/reg-event-db
   :mapping/>gen-keys
   [(rf/path :mapping :children)]
   (fn [mapping _]
-    (map #(with-meta % {:id (random-uuid)}) mapping)))
+    (map (fn [item]
+           (def item item)
+           (if (= (-> item (nth 2) :type) :map)
+             ;; If the attribute is an object, add keys to the sub-attrs also
+             (-> item
+                 (update-in [2 :children]
+                            (fn [sa] (map #(with-meta % {:id (random-uuid)}) sa)))
+                 (with-meta {:id (random-uuid)}))
+             (with-meta item {:id (random-uuid)})))
+         mapping)))
 

@@ -51,19 +51,17 @@
            :on-change   (partial on-change :mapping)}]
    [reset-icon]])
 
-(defn object-subattr [subattr {:keys [value on-change]}]
-  [:div {:class (<class stl/object-subattr)}
-   [:div {:class (<class stl/object-attr-title)} (name subattr)]
-   [:div {:class (<class stl/object-subattr-inputs)}
-    [input {:name        "entity"
-            :placeholder "Entity"
-            :value       (:entity value)
-            :on-change   (partial on-change :entity)}]
-    [input {:name        "mapping"
-            :placeholder "Mapping"
-            :value       (:mapping value)
-            :on-change   (partial on-change :mapping)}]
-    [reset-icon]]])
+(defn object-inputs [{:keys [value on-change]}]
+  [:div {:class (<class stl/object-subattr-inputs)}
+   [input {:name        "entity"
+           :placeholder "Entity"
+           :value       (:entity value)
+           :on-change   (partial on-change :entity)}]
+   [input {:name        "mapping"
+           :placeholder "Mapping"
+           :value       (:mapping value)
+           :on-change   (partial on-change :mapping)}]
+   [reset-icon]])
 
 (defn object-attr [& body]
   [:div {:class (<class stl/object-attr)} body])
@@ -105,4 +103,14 @@
       (when-not @collapsed?
         [:div {:class (<class stl/body)} body])])))
 
-
+(defn sub-attr
+  ([name body]
+   (sub-attr name {} body))
+  ([name {:keys [on-change]} body]
+   [:div {:class (<class stl/object-subattr)}
+    [:input {:class         (join (<class stl/object-attr-title)
+                                  (<class stl/head-input))
+             :type          "text"
+             :on-change on-change
+             :default-value name}]
+    body]))

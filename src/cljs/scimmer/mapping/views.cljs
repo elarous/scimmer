@@ -9,7 +9,7 @@
             [scimmer.mapping.events]
             [scimmer.mapping.styles :as stl]
             [scimmer.mapping.card.views :refer [card header]]
-            [scimmer.mapping.attribute.views :refer [attribute single-attr object-attr object-subattr array-attr array-attr-item]]))
+            [scimmer.mapping.attribute.views :refer [attribute sub-attr single-attr object-attr object-inputs array-attr array-attr-item]]))
 
 ;; helper functions
 (defn get-entity-mapping [ns-k]
@@ -53,29 +53,33 @@
                                                (:mapping value))}]))}]]))
 
      (for [item map-attrs]
-       (let [[attr-name _attr-props schema] item]
+       (let [[attr-name _attr-props schema] item
+             set-sub-attribute (fn [attr-id sub-attr-id sub-attr]
+                                 (rf/dispatch [:mapping/>set-sub-attr attr-id sub-attr-id sub-attr]))]
          ^{:key (-> item meta :id)}
          [attribute attr-name {:on-change #(set-attribute (-> item meta :id)
                                                           (-> % .-target .-value))}
           [object-attr
-           (for [[subattr-name attr-props _schema] (:children schema)]
-             (let [value (get-entity-mapping (:scimmer.services.schema/mapping attr-props))]
-               ^{:key (str attr-name "_" subattr-name)}
-               [object-subattr
-                subattr-name
-                {:value     value
-                 :attr-name attr-name
-                 :on-change (fn [source e]
-                              (rf/dispatch [:mapping/>update-map-attr
-                                            {:name    attr-name
-                                             :subattr subattr-name
-                                             :entity  (if (= source :entity)
-                                                        (-> e .-target .-value)
-                                                        (:entity value))
-                                             :mapping (if (= source :mapping)
-                                                        (-> e .-target .-value)
-                                                        (:mapping value))}]))}]))]]))
-
+           (for [sub-item (:children schema)]
+             (let [[subattr-name attr-props _schema] sub-item
+                   value (get-entity-mapping (:scimmer.services.schema/mapping attr-props))]
+               ^{:key (-> sub-item meta :id)}
+               [sub-attr subattr-name {:on-change #(set-sub-attribute (-> item meta :id)
+                                                                      (-> sub-item meta :id)
+                                                                      (-> % .-target .-value))}
+                [object-inputs
+                 {:value     value
+                  :attr-name attr-name
+                  :on-change (fn [source e]
+                               (rf/dispatch [:mapping/>update-map-attr
+                                             {:name    attr-name
+                                              :subattr subattr-name
+                                              :entity  (if (= source :entity)
+                                                         (-> e .-target .-value)
+                                                         (:entity value))
+                                              :mapping (if (= source :mapping)
+                                                         (-> e .-target .-value)
+                                                         (:mapping value))}]))}]]))]]))
 
      (for [item array-attrs]
        (let [[attr-name _attr-props schema] item]
