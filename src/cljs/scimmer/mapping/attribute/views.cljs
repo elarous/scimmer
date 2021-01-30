@@ -2,7 +2,8 @@
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
             [herb.core :refer [<class join]]
-            ["grommet" :refer [Grommet Button Heading Select Grid Box TextInput FormField]]
+            ["grommet" :refer [Anchor Grommet Button Heading Select Grid Box TextInput FormField]]
+            ["grommet-icons" :refer [AddCircle]]
             [scimmer.mapping.attribute.styles :as stl]))
 
 ;; Icons
@@ -63,8 +64,13 @@
            :on-change   (partial on-change :mapping)}]
    [reset-icon]])
 
-(defn object-attr [& body]
-  [:div {:class (<class stl/object-attr)} body])
+(defn object-attr [id & body]
+  [:div {:class (<class stl/object-attr)}
+   body
+   [:div {:class (<class stl/add-btn-container)}
+    [:> Anchor {:on-click #(rf/dispatch [:mapping/>add-sub-attr id])
+                :icon     (r/create-element AddCircle #js {:className (<class stl/add-btn)})}]]])
+
 
 (defn array-attr-item [{:keys [value on-change]}]
   (let [{:keys [entity type mapping]} value]
@@ -83,8 +89,12 @@
              :on-change   (partial on-change :mapping)}]
      [reset-icon]]))
 
-(defn array-attr [& body]
-  [:div {:class (<class stl/array-attr)} body])
+(defn array-attr [id & body]
+  [:div {:class (<class stl/array-attr)}
+   body
+   [:div {:class (<class stl/add-btn-container)}
+    [:> Anchor {:on-click #(rf/dispatch [:mapping/>add-sub-item id])
+                :icon     (r/create-element AddCircle #js {:className (<class stl/add-btn)})}]]])
 
 (defn attribute
   ([name body]

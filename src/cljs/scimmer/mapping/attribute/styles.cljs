@@ -45,6 +45,15 @@
   {:display        "flex"
    :flex-direction "column"})
 
+(defn add-btn-container  []
+  {:display "flex"
+   :justify-content "center"})
+
+(defn add-btn []
+  ^{:pseudo {:hover {:stroke (:secondary colors)}}}
+  {:stroke (:grey-2 colors)
+   :transition "0.3s stroke"})
+
 (defn object-attr-title []
   {:color       (:tertiary colors)
    :font-weight "bold"})

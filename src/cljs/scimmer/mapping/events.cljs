@@ -156,6 +156,18 @@
       (conj attrs default-attr))))
 
 (rf/reg-event-db
+  :mapping/>add-sub-attr
+  [(attr-interceptor map-attr-remove)]
+  (fn [attrs [_ id]]
+    (let [default-sub-attr (with-meta [:newSubAttr {:scimmer.services.schema/mapping :user/newSubAttr} {:type string?}]
+                                      {:id (random-uuid)})
+          idx (->> attrs
+                   (map-indexed (fn [idx itm] [idx itm]))
+                   (some (fn [[idx item]]
+                           (and (= id (-> item meta :id)) idx))))]
+      (update-in attrs [idx 2 :children] conj default-sub-attr))))
+
+(rf/reg-event-db
   :mapping/>add-array-attr
   [(attr-interceptor array-attr-remove)]
   (fn [attrs _]
@@ -173,9 +185,25 @@
                                                     [:value
                                                      {:scimmer.services.schema/mapping :user/value1}
                                                      {:type string?}]]}]]}]}]
-
             {:id (random-uuid)})]
       (conj attrs default-attr))))
+
+(rf/reg-event-db
+  :mapping/>add-sub-item
+  [(attr-interceptor array-attr-remove)]
+  (fn [attrs [_ id]]
+    (let [default-sub-attr [:type1
+                            nil
+                            {:type     :map,
+                             :children [[:type nil {:type :=, :children [:type1]}]
+                                        [:value
+                                         {:scimmer.services.schema/mapping :user/value1}
+                                         {:type string?}]]}]
+          idx (->> attrs
+                   (map-indexed (fn [idx itm] [idx itm]))
+                   (some (fn [[idx item]]
+                           (and (= id (-> item meta :id)) idx))))]
+      (update-in attrs [idx 2 :children 0 :children] conj default-sub-attr))))
 
 (rf/reg-event-db
   :mapping/>gen-keys

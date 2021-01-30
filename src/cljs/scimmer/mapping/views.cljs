@@ -97,6 +97,7 @@
          [attribute attr-name {:on-change #(set-attribute (-> item meta :id)
                                                           (-> % .-target .-value))}
           [object-attr
+           (-> item meta :id)
            (for [sub-item (:children schema)]
              (let [[subattr-name attr-props _schema] sub-item
                    value (get-entity-mapping (:scimmer.services.schema/mapping attr-props))]
@@ -125,6 +126,7 @@
                                                           (-> % .-target .-value))}
           (let [arr-schema (-> schema :children first :children)]
             [array-attr
+             (-> item meta :id)
              (for [[i [type _props children]] (doall (map-indexed vector arr-schema))]
                (let [value (merge {:type type}
                                   (-> (get-mapping-attr-item children)
@@ -159,13 +161,11 @@
                             (.stringify js/JSON (clj->js @(rf/subscribe [:mapping/resource])) nil 2)
                  :on-change on-change}]]))
 
-
 (defn entities-card []
   [card {}
    [header "Entities" "User"]
    [:pre {:class (<class stl/entities)}
     (.stringify js/JSON (clj->js @(rf/subscribe [:mapping/entities])) nil 2)]])
-
 
 (defn mapping-page []
   [:div {:class (<class stl/container)}
