@@ -13,6 +13,7 @@
 (defn trash-icon []
   ^{:pseudo {:hover {:stroke (:secondary colors)}}}
   {:stroke (str (:grey-3 colors))
+   :transition "0.3s stroke"
    :height (sizes 2)
    :width (sizes 2)})
 

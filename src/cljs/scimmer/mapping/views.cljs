@@ -94,7 +94,9 @@
      (for [item map-attrs]
        (let [[attr-name _attr-props schema] item
              set-sub-attribute (fn [attr-id sub-attr-id sub-attr]
-                                 (rf/dispatch [:mapping/>set-sub-attr attr-id sub-attr-id sub-attr]))]
+                                 (rf/dispatch [:mapping/>set-sub-attr attr-id sub-attr-id sub-attr]))
+             remove-sub-attribute (fn [attr-id sub-attr-id]
+                                    (rf/dispatch [:mapping/>remove-sub-attr attr-id sub-attr-id]))]
          ^{:key (-> item meta :id)}
          [attribute attr-name {:on-change #(set-attribute (-> item meta :id)
                                                           (-> % .-target .-value))
@@ -107,7 +109,9 @@
                ^{:key (-> sub-item meta :id)}
                [sub-attr subattr-name {:on-change #(set-sub-attribute (-> item meta :id)
                                                                       (-> sub-item meta :id)
-                                                                      (-> % .-target .-value))}
+                                                                      (-> % .-target .-value))
+                                       :on-remove #(remove-sub-attribute (-> item meta :id)
+                                                                         (-> sub-item meta :id))}
                 [object-inputs
                  {:value     value
                   :attr-name attr-name
@@ -123,7 +127,8 @@
                                                          (:mapping value))}]))}]]))]]))
 
      (for [item array-attrs]
-       (let [[attr-name _attr-props schema] item]
+       (let [[attr-name _attr-props schema] item
+             remove-sub-item #(rf/dispatch [:mapping/>remove-sub-item %1 %2])]
          ^{:key (-> item meta :id)}
          [attribute attr-name {:on-change #(set-attribute (-> item meta :id)
                                                           (-> % .-target .-value))
@@ -138,6 +143,7 @@
                  ^{:key i}
                  [array-attr-item
                   {:value     value
+                   :on-remove #(remove-sub-item (-> item meta :id) type)
                    :on-change (fn [source e]
                                 (rf/dispatch [:mapping/>update-array-attr
                                               {:name    attr-name

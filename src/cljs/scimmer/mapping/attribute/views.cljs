@@ -49,8 +49,8 @@
    [input {:name        "mapping"
            :placeholder "Mapping"
            :value       (:mapping value)
-           :on-change   (partial on-change :mapping)}]
-   [reset-icon]])
+           :on-change   (partial on-change :mapping)}]])
+
 
 (defn object-inputs [{:keys [value on-change]}]
   [:div {:class (<class stl/object-subattr-inputs)}
@@ -61,8 +61,8 @@
    [input {:name        "mapping"
            :placeholder "Mapping"
            :value       (:mapping value)
-           :on-change   (partial on-change :mapping)}]
-   [reset-icon]])
+           :on-change   (partial on-change :mapping)}]])
+
 
 (defn object-attr [id & body]
   [:div {:class (<class stl/object-attr)}
@@ -71,8 +71,7 @@
     [:> Anchor {:on-click #(rf/dispatch [:mapping/>add-sub-attr id])
                 :icon     (r/create-element AddCircle #js {:className (<class stl/add-btn)})}]]])
 
-
-(defn array-attr-item [{:keys [value on-change]}]
+(defn array-attr-item [{:keys [value on-change on-remove]}]
   (let [{:keys [entity type mapping]} value]
     [:div {:class (<class stl/array-attr-inputs)}
      [input {:name        "entity"
@@ -87,7 +86,10 @@
              :placeholder "Mapping"
              :value       mapping
              :on-change   (partial on-change :mapping)}]
-     [reset-icon]]))
+     [:> Anchor {:icon     (r/create-element Trash #js {:className (<class stl/trash-icon)
+                                                        :size      "xsmall"})
+                 :on-click on-remove}]]))
+
 
 (defn array-attr [id & body]
   [:div {:class (<class stl/array-attr)}
@@ -110,8 +112,8 @@
                  :defaultValue name
                  :on-change    on-change
                  :type         "text"}]]
-       [:> Anchor {:icon (r/create-element Trash #js {:className (<class stl/trash-icon)
-                                                      :size "xsmall"})
+       [:> Anchor {:icon     (r/create-element Trash #js {:className (<class stl/trash-icon)
+                                                          :size      "xsmall"})
                    :on-click on-remove}]]
 
       (when-not @collapsed?
@@ -120,11 +122,15 @@
 (defn sub-attr
   ([name body]
    (sub-attr name {} body))
-  ([name {:keys [on-change]} body]
+  ([name {:keys [on-change on-remove]} body]
    [:div {:class (<class stl/object-subattr)}
-    [:input {:class         (join (<class stl/object-attr-title)
-                                  (<class stl/head-input))
-             :type          "text"
-             :on-change on-change
-             :default-value name}]
+    [:div {:class (<class stl/head-container)}
+     [:input {:class         (join (<class stl/object-attr-title)
+                                   (<class stl/head-input))
+              :type          "text"
+              :on-change     on-change
+              :default-value name}]
+     [:> Anchor {:icon     (r/create-element Trash #js {:className (<class stl/trash-icon)
+                                                        :size      "xsmall"})
+                 :on-click on-remove}]]
     body]))

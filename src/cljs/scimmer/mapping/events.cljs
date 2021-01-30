@@ -208,8 +208,34 @@
 (rf/reg-event-fx
   :mapping/>remove-attr
   (fn [{db :db} [_ id]]
-    {:db (update-in db [:mapping :children] (fn [attrs] (remove #(= (-> % meta :id) id) attrs)))
+    {:db       (update-in db [:mapping :children] (fn [attrs] (remove #(= (-> % meta :id) id) attrs)))
      :dispatch [:mapping/>resource->entities]}))
+
+(rf/reg-event-fx
+  :mapping/>remove-sub-attr
+  (fn [{db :db} [_ attr-id sub-attr-id]]
+    (let [attrs (vec (get-in db [:mapping :children]))
+          idx (->> attrs
+                   (map-indexed (fn [idx itm] [idx itm]))
+                   (some (fn [[idx item]]
+                           (and (= attr-id (-> item meta :id)) idx))))]
+      {:db       (-> db
+                     (update-in [:mapping :children] vec)
+                     (update-in [:mapping :children idx 2 :children]
+                                #(remove (fn [sub-item] (= sub-attr-id (-> sub-item meta :id))) %)))
+       :dispatch [:mapping/>resource->entities]})))
+
+(rf/reg-event-fx
+  :mapping/>remove-sub-item
+  (fn [{db :db} [_ id name]]
+    (let [attrs (get-in db [:mapping :children])
+          updated-attr
+          (-> (some #(and (= (-> % meta :id) id) %) attrs)
+              vec
+              (update-in [2 :children 0 :children]
+                         (fn [sub-items] (remove #(= (first %) name) sub-items))))
+          new-attrs (map (fn [attr] (if (= (-> attr meta :id) id) updated-attr attr)) attrs)]
+      {:db (assoc-in db [:mapping :children] new-attrs)})))
 
 (rf/reg-event-db
   :mapping/>gen-keys
