@@ -3,8 +3,10 @@
             [reagent.core :as r]
             [re-frame.core :as rf]
             [herb.core :refer [<class]]
-            ["grommet" :refer [Grommet Button Heading Select Grid Box TextInput FormField]]
+            ["grommet" :refer [Anchor Grommet Button Heading Select Grid Box TextInput FormField Layer]]
+            ["grommet-icons" :refer [Add]]
             [scimmer.utils :refer [debounce]]
+            [scimmer.theme :refer [colors]]
             [scimmer.mapping.subs]
             [scimmer.mapping.events]
             [scimmer.mapping.styles :as stl]
@@ -24,6 +26,41 @@
        second
        :scimmer.services.schema/mapping))
 ;;
+(defn add-attr-modal [{:keys [on-close]}]
+  [:> Layer {:on-esc           on-close
+             :on-click-outside on-close}
+   [:div {:class (<class stl/add-modal)}
+    [:h2 {:class (<class stl/add-modal-title)} "Which kind of attribute?"]
+    [:div {:class (<class stl/buttons)}
+     [:button {:class    (<class stl/button)
+               :on-click (fn [_]
+                           (rf/dispatch [:mapping/>add-single-attr])
+                           (on-close))}
+      [:div {:class (<class stl/icon)} "1"] "Single"]
+     [:button {:class    (<class stl/button)
+               :on-click (fn [_]
+                           (rf/dispatch [:mapping/>add-map-attr])
+                           (on-close))}
+      [:div {:class (<class stl/icon)} "{}"] "Object"]
+     [:button {:class (<class stl/button)
+               :on-click (fn [_]
+                           (rf/dispatch [:mapping/>add-array-attr])
+                           (on-close))}
+      [:div {:class (<class stl/icon)} "[]"] "Array"]]]])
+
+(defn top-actions []
+  (r/with-let [attr-modal-visible? (r/atom false)
+               on-close #(reset! attr-modal-visible? false)]
+    [:div
+     (when @attr-modal-visible?
+       [add-attr-modal {:on-close on-close}])
+     [:div {:class (<class stl/top-actions)}
+      [:> Anchor {:on-click #(reset! attr-modal-visible? true)
+                  :margin   "xsmall"
+                  :color    (:secondary colors)
+                  :size     "small"
+                  :icon     (r/create-element Add #js {:size "small"})
+                  :label    "Add attribute"}]]]))
 
 (defn schema-card []
   (let [single-attrs @(rf/subscribe [:mapping/single-attrs])
@@ -32,7 +69,7 @@
         set-attribute #(rf/dispatch [:mapping/>set-attr %1 %2])]
     [card {:class (<class stl/schema-card)}
      [header "Schema" "User"]
-
+     [top-actions]
      (for [item single-attrs]
        (let [[attr-name attr-props _schema] item
              value (get-entity-mapping (:scimmer.services.schema/mapping attr-props))]

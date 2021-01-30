@@ -17,14 +17,14 @@
 (defn head-input []
   ^{:extend [head]
     :pseudo {:hover {:border (str "1px solid " (:grey-3 colors))}
-             :focus {:border    (str "1px solid " (:grey-3 colors))
+             :focus {:border     (str "1px solid " (:grey-3 colors))
                      :background (:grey-1 colors)}}}
-  {:border  "1px solid transparent"
+  {:border        "1px solid transparent"
    :border-radius (sizes 0.5)
-   :transition "0.3s border, 0.3s background"
-   :padding (sizes 0.5)
-   :max-width (sizes 20)
-   :outline "none"})
+   :transition    "0.3s border, 0.3s background"
+   :padding       (sizes 0.5)
+   :max-width     (sizes 20)
+   :outline       "none"})
 
 (defn collapse-icon [collapsed?]
   {:cursor    "pointer"
@@ -79,3 +79,5 @@
 (defn attr-input []
   {:border  (str "1px solid " (:grey-3 colors))
    :padding (sizes 1)})
+
+

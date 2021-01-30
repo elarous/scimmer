@@ -132,6 +132,52 @@
        :dispatch [:mapping/>resource->entities]})))
 
 (rf/reg-event-db
+  :mapping/>add-single-attr
+  [(attr-interceptor single-attr-remove)]
+  (fn [attrs _]
+    (let [default-attr
+          (with-meta
+            [:newAttribute {:scimmer.services.schema/mapping :user/new_attribute} {:type string?}]
+            {:id (random-uuid)})]
+      (conj attrs default-attr))))
+
+(rf/reg-event-db
+  :mapping/>add-map-attr
+  [(attr-interceptor map-attr-remove)]
+  (fn [attrs _]
+    (let [default-attr
+          (with-meta
+            [:newAttribute nil
+             {:type     :map
+              :children [(with-meta
+                           [:subAttribute {:scimmer.services.schema/mapping :user/sub_attribute} {:type string?}]
+                           {:id (random-uuid)})]}]
+            {:id (random-uuid)})]
+      (conj attrs default-attr))))
+
+(rf/reg-event-db
+  :mapping/>add-array-attr
+  [(attr-interceptor array-attr-remove)]
+  (fn [attrs _]
+    (let [default-attr
+          (with-meta
+            [:newAttribute
+             nil
+             {:type     :vector,
+              :children [{:type       :multi,
+                          :properties {:dispatch :type},
+                          :children   [[:type1
+                                        nil
+                                        {:type     :map,
+                                         :children [[:type nil {:type :=, :children [:type1]}]
+                                                    [:value
+                                                     {:scimmer.services.schema/mapping :user/value1}
+                                                     {:type string?}]]}]]}]}]
+
+            {:id (random-uuid)})]
+      (conj attrs default-attr))))
+
+(rf/reg-event-db
   :mapping/>gen-keys
   [(rf/path :mapping :children)]
   (fn [mapping _]
