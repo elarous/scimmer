@@ -205,6 +205,12 @@
                            (and (= id (-> item meta :id)) idx))))]
       (update-in attrs [idx 2 :children 0 :children] conj default-sub-attr))))
 
+(rf/reg-event-fx
+  :mapping/>remove-attr
+  (fn [{db :db} [_ id]]
+    {:db (update-in db [:mapping :children] (fn [attrs] (remove #(= (-> % meta :id) id) attrs)))
+     :dispatch [:mapping/>resource->entities]}))
+
 (rf/reg-event-db
   :mapping/>gen-keys
   [(rf/path :mapping :children)]

@@ -6,6 +6,16 @@
    :flex-direction "column"
    :margin         (sizes 4)})
 
+(defn head-container []
+  {:display "flex"
+   :justify-content "space-between"})
+
+(defn trash-icon []
+  ^{:pseudo {:hover {:stroke (:secondary colors)}}}
+  {:stroke (str (:grey-3 colors))
+   :height (sizes 2)
+   :width (sizes 2)})
+
 (defn head []
   {:display     "flex"
    :align-items "center"

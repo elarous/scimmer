@@ -66,7 +66,8 @@
   (let [single-attrs @(rf/subscribe [:mapping/single-attrs])
         map-attrs @(rf/subscribe [:mapping/map-attrs])
         array-attrs @(rf/subscribe [:mapping/array-attrs])
-        set-attribute #(rf/dispatch [:mapping/>set-attr %1 %2])]
+        set-attribute #(rf/dispatch [:mapping/>set-attr %1 %2])
+        remove-attr #(rf/dispatch [:mapping/>remove-attr %1])]
     [card {:class (<class stl/schema-card)}
      [header "Schema" "User"]
      [top-actions]
@@ -75,7 +76,8 @@
              value (get-entity-mapping (:scimmer.services.schema/mapping attr-props))]
          ^{:key (-> item meta :id)}
          [attribute attr-name {:on-change #(set-attribute (-> item meta :id)
-                                                          (-> % .-target .-value))}
+                                                          (-> % .-target .-value))
+                               :on-remove #(remove-attr (-> item meta :id))}
           [single-attr
            {:value value
             :on-change
@@ -95,7 +97,8 @@
                                  (rf/dispatch [:mapping/>set-sub-attr attr-id sub-attr-id sub-attr]))]
          ^{:key (-> item meta :id)}
          [attribute attr-name {:on-change #(set-attribute (-> item meta :id)
-                                                          (-> % .-target .-value))}
+                                                          (-> % .-target .-value))
+                               :on-remove #(remove-attr (-> item meta :id))}
           [object-attr
            (-> item meta :id)
            (for [sub-item (:children schema)]
@@ -123,7 +126,8 @@
        (let [[attr-name _attr-props schema] item]
          ^{:key (-> item meta :id)}
          [attribute attr-name {:on-change #(set-attribute (-> item meta :id)
-                                                          (-> % .-target .-value))}
+                                                          (-> % .-target .-value))
+                               :on-remove #(remove-attr (-> item meta :id))}
           (let [arr-schema (-> schema :children first :children)]
             [array-attr
              (-> item meta :id)
