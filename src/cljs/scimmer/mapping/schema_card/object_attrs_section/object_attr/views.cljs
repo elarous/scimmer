@@ -9,16 +9,16 @@
             [scimmer.mapping.schema-card.object-attrs-section.object-attr.events]))
 
 
-(defn object-inputs [{:keys [value on-change]}]
+(defn object-inputs [{:keys [group mapped-to on-change]}]
   [:div {:class (<class stl/object-subattr-inputs)}
-   [input {:name        "entity"
-           :placeholder "Entity"
-           :value       (:entity value)
-           :on-change   (partial on-change :entity)}]
-   [input {:name        "mapping"
-           :placeholder "Mapping"
-           :value       (:mapping value)
-           :on-change   (partial on-change :mapping)}]])
+   [input {:name        "group"
+           :placeholder "Group"
+           :value       group
+           :on-change   (partial on-change :group)}]
+   [input {:name        "mapped to"
+           :placeholder "Mapped To"
+           :value       mapped-to
+           :on-change   (partial on-change :mapped-to)}]])
 
 
 (defn object-attr [id & body]
@@ -27,6 +27,7 @@
    [:div {:class (<class stl/add-btn-container)}
     [:> Anchor {:on-click #(rf/dispatch [:mapping/>add-sub-attr id])
                 :icon     (r/create-element AddCircle #js {:className (<class stl/add-btn)})}]]])
+
 (defn sub-attr
   ([name body]
    (sub-attr name {} body))

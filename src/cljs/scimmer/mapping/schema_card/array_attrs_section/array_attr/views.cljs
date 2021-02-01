@@ -8,25 +8,23 @@
             [scimmer.mapping.schema-card.array-attrs-section.array-attr.styles :as stl]
             [scimmer.mapping.schema-card.array-attrs-section.array-attr.events]))
 
-(defn array-attr-item [{:keys [value on-change on-remove]}]
-  (let [{:keys [entity type mapping]} value]
-    [:div {:class (<class stl/array-attr-inputs)}
-     [input {:name        "entity"
-             :placeholder "Entity"
-             :value       entity
-             :on-change   (partial on-change :entity)}]
-     [input {:name        "type"
-             :placeholder "Type"
-             :value       (name type)
-             :on-change   (partial on-change :type)}]
-     [input {:name        "mapping"
-             :placeholder "Mapping"
-             :value       mapping
-             :on-change   (partial on-change :mapping)}]
-     [:> Anchor {:icon     (r/create-element Trash #js {:className (<class stl/trash-icon)
-                                                        :size      "xsmall"})
-                 :on-click on-remove}]]))
-
+(defn array-attr-item [{:keys [group mapped-to type on-change on-remove]}]
+  [:div {:class (<class stl/array-attr-inputs)}
+   [input {:name        "group"
+           :placeholder "Group"
+           :value       group
+           :on-change   (partial on-change :group)}]
+   [input {:name        "type"
+           :placeholder "Type"
+           :value       (name type)
+           :on-change   (partial on-change :type)}]
+   [input {:name        "mappedTo"
+           :placeholder "Mapped To"
+           :value       mapped-to
+           :on-change   (partial on-change :mapped-to)}]
+   [:> Anchor {:icon     (r/create-element Trash #js {:className (<class stl/trash-icon)
+                                                      :size      "xsmall"})
+               :on-click on-remove}]])
 
 (defn array-attr [id & body]
   [:div {:class (<class stl/array-attr)}
