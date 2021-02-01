@@ -55,7 +55,6 @@
                                                                  [:value
                                                                   #:scimmer.services.schema{:mapping :custom_fields/mobile_number}
                                                                   {:type string?}]]}]]}]}]]}
-
    :schema   {#uuid "0ea136ad-061d-45f1-8d92-db5627a156f2"
               {:type      :single
                :name      "id"
@@ -75,6 +74,8 @@
                            {:mapped-to "mobile_phone"
                             :type      "mobile"
                             :group     "user"}}}}
+
+
 
 
    :resource {:id           "0ea136ad-061d-45f1-8d92-db5627a156f2"

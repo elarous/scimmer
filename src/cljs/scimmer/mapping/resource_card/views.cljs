@@ -25,6 +25,5 @@
     [card {:body-class (<class stl/resource-card-body)}
      [header "Resource" "User"]
      [:textarea {:class     (<class stl/resource-textarea)
-                 :default-value
-                            (.stringify js/JSON (clj->js @(rf/subscribe [:mapping/resource])) nil 2)
+                 :default-value @(rf/subscribe [:mapping/resource-json])
                  :on-change on-change}]]))

@@ -13,3 +13,9 @@
     (let [schema (:mapping db)
           resource (:resource db)]
       (assoc db :entities (build-resource schema resource [] {} {})))))
+
+(rf/reg-event-db
+  :mapping/>set-resource
+  (fn [db [_ str-resource]]
+    (let [resource (js->clj (.parse js/JSON str-resource) :keywordize-keys true)]
+      (assoc db :resource resource))))
