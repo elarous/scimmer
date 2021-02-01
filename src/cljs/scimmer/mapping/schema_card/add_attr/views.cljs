@@ -11,8 +11,6 @@
             [scimmer.mapping.events]
             [scimmer.mapping.schema-card.add-attr.styles :as stl]))
 
-
-
 (defn add-attr-modal [{:keys [on-close]}]
   [:> Layer {:on-esc           on-close
              :on-click-outside on-close}
@@ -34,3 +32,4 @@
                            (rf/dispatch [:mapping/>add-array-attr])
                            (on-close))}
       [:div {:class (<class stl/icon)} "[]"] "Array"]]]])
+

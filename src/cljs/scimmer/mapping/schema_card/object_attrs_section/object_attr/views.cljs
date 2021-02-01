@@ -5,7 +5,8 @@
             ["grommet" :refer [Anchor Grommet Button Heading Select Grid Box TextInput FormField]]
             ["grommet-icons" :refer [AddCircle Trash]]
             [scimmer.mapping.schema-card.object-attrs-section.object-attr.styles :as stl]
-            [scimmer.mapping.schema-card.input.views :refer [input]]))
+            [scimmer.mapping.schema-card.input.views :refer [input]]
+            [scimmer.mapping.schema-card.object-attrs-section.object-attr.events]))
 
 
 (defn object-inputs [{:keys [value on-change]}]

@@ -5,7 +5,8 @@
             ["grommet" :refer [Anchor Grommet Button Heading Select Grid Box TextInput FormField]]
             ["grommet-icons" :refer [AddCircle Trash]]
             [scimmer.mapping.schema-card.input.views :refer [input]]
-            [scimmer.mapping.schema-card.array-attrs-section.array-attr.styles :as stl]))
+            [scimmer.mapping.schema-card.array-attrs-section.array-attr.styles :as stl]
+            [scimmer.mapping.schema-card.array-attrs-section.array-attr.events]))
 
 (defn array-attr-item [{:keys [value on-change on-remove]}]
   (let [{:keys [entity type mapping]} value]

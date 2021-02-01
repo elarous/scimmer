@@ -3,6 +3,7 @@
             [re-frame.core :as rf]
             [herb.core :refer [<class join]]
             ["grommet" :refer [Anchor Grommet Button Heading Select Grid Box TextInput FormField]]
+            [scimmer.mapping.schema-card.single-attrs-section.single-attr.events]
             [scimmer.mapping.schema-card.input.views :refer [input]]
             [scimmer.mapping.schema-card.single-attrs-section.single-attr.styles :as stl]))
 
