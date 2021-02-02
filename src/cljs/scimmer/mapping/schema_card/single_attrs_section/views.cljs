@@ -22,14 +22,7 @@
         [single-attr
          {:group     group
           :mapped-to mapped-to
-          :on-change
-                     (fn [source e]
-                       (rf/dispatch [:mapping/>update-single-attr
-                                     {:name    name
-                                      :entity  (if (= source :group)
-                                                 (-> e .-target .-value)
-                                                 group)
-                                      :mapping (if (= source :mapped-to)
-                                                 (-> e .-target .-value)
-                                                 mapped-to)}]))}]])]))
+          :on-group-change  #(rf/dispatch [:mapping/>set-single-group id %])
+          :on-mapped-to-change #(rf/dispatch [:mapping/>set-single-mapped-to id %])}]])]))
+
 

@@ -36,23 +36,15 @@
        (some (fn [[idx [attr-name _props _schema]]] (and (= name attr-name) idx)))))
 
 ;; Events
-(rf/reg-event-fx
+(rf/reg-event-db
   :mapping/>set-attr
-  (fn [{db :db} [_ id name]]
-    (let [attrs (get-in db [:mapping :children])
-          idx (->> attrs
-                   (map-indexed (fn [idx itm] [idx itm]))
-                   (some (fn [[idx item]]
-                           (and (= id (-> item meta :id)) idx))))
-          new-target (vec (concat [(keyword name)] (rest (nth attrs idx))))
-          new-attrs (map-indexed (fn [i item] (if (= i idx)
-                                                (with-meta new-target (meta item))
-                                                item)) attrs)]
-      {:db       (assoc-in db [:mapping :children] (vec new-attrs))
-       :dispatch [:mapping/>resource->entities]})))
+  [(rf/path :schema)]
+  (fn [schema [_ id name]]
+    (assoc-in schema [id :name] name)))
 
-(rf/reg-event-fx
+(rf/reg-event-db
   :mapping/>remove-attr
-  (fn [{db :db} [_ id]]
-    {:db       (update-in db [:mapping :children] (fn [attrs] (remove #(= (-> % meta :id) id) attrs)))
-     :dispatch [:mapping/>resource->entities]}))
+  [(rf/path :schema)]
+  (fn [schema [_ id]]
+    (dissoc schema id)))
+

@@ -8,23 +8,27 @@
     [scimmer.services.mapping :refer [build-resource]]
     [scimmer.mapping.schema-card.events :refer [attr-interceptor get-attr-idx]]))
 
-(defn single-attr-remove [[_name _props schema]]
-  (contains? #{:vector :map} (:type schema)))
+;; update
+(rf/reg-event-db
+  :mapping/>set-single-group
+  [(rf/path :schema)]
+  (fn [schema [_ id group]]
+    (assoc-in schema [id :group] group)))
 
 (rf/reg-event-db
-  :mapping/>update-single-attr
-  [(attr-interceptor single-attr-remove)]
-  (fn [single-attrs [_ {:keys [name entity mapping]}]]
-    (let [target-idx (get-attr-idx single-attrs name)]
-      (assoc-in single-attrs [target-idx 1 :scimmer.services.schema/mapping]
-                (keyword mapping entity)))))
+  :mapping/>set-single-mapped-to
+  [(rf/path :schema)]
+  (fn [schema [_ id mapped-to]]
+    (assoc-in schema [id :mapped-to] mapped-to)))
 
+;; add
 (rf/reg-event-db
   :mapping/>add-single-attr
-  [(attr-interceptor single-attr-remove)]
-  (fn [attrs _]
-    (let [default-attr
-          (with-meta
-            [:newAttribute {:scimmer.services.schema/mapping :user/new_attribute} {:type string?}]
-            {:id (random-uuid)})]
-      (conj attrs default-attr))))
+  [(rf/path :schema)]
+  (fn [schema _]
+    (let [default {:type      :single
+                   :name      "newAttribute"
+                   :mapped-to "new_attribute"
+                   :group     "user"}]
+      (assoc schema (random-uuid) default))))
+

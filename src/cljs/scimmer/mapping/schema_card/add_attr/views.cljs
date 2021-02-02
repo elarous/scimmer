@@ -24,7 +24,7 @@
       [:div {:class (<class stl/icon)} "1"] "Single"]
      [:button {:class    (<class stl/button)
                :on-click (fn [_]
-                           (rf/dispatch [:mapping/>add-map-attr])
+                           (rf/dispatch [:mapping/>add-object-attr])
                            (on-close))}
       [:div {:class (<class stl/icon)} "{}"] "Object"]
      [:button {:class    (<class stl/button)
@@ -32,4 +32,3 @@
                            (rf/dispatch [:mapping/>add-array-attr])
                            (on-close))}
       [:div {:class (<class stl/icon)} "[]"] "Array"]]]])
-

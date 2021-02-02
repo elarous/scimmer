@@ -16,34 +16,27 @@
 
 (defn objects-section [{:keys [set-attr remove-attr]}]
   (let [object-attrs @(rf/subscribe [:mapping/object-attrs])
-        set-sub-attribute (fn [attr-id sub-attr-id sub-attr]
-                            (rf/dispatch [:mapping/>set-sub-attr attr-id sub-attr-id sub-attr]))
-        remove-sub-attribute (fn [attr-id sub-attr-id]
-                               (rf/dispatch [:mapping/>remove-sub-attr attr-id sub-attr-id]))]
+        set-sub-attr (fn [attr-id sub-attr-id sub-attr]
+                       (rf/dispatch [:mapping/>set-sub-attr attr-id sub-attr-id sub-attr]))
+        remove-sub-attr (fn [attr-id sub-attr-id]
+                          (rf/dispatch [:mapping/>remove-sub-attr attr-id sub-attr-id]))]
     [:<>
      (for [{:keys [id name sub-attrs]} object-attrs]
        ^{:key id}
        [attribute name {:on-change #(set-attr id (-> % .-target .-value))
                         :on-remove #(remove-attr id)}
         [object-attr
-         id
-         (for [{sub-id :id sub-name :name mapped-to :mapped-to group :group} sub-attrs]
-           ^{:key sub-id}
-           [sub-attr sub-name {:on-change #(set-sub-attribute id sub-id (-> % .-target .-value))
-                               :on-remove #(remove-sub-attribute id sub-id)}
+         {:on-add-sub-attr #(rf/dispatch [:mapping/>add-sub-attr id])}
+         (for [{sub-attr-id :id sub-name :name mapped-to :mapped-to group :group} sub-attrs]
+           ^{:key sub-attr-id}
+           [sub-attr sub-name {:on-change #(set-sub-attr id sub-attr-id (-> % .-target .-value))
+                               :on-remove #(remove-sub-attr id sub-attr-id)}
 
             [object-inputs
-             {:group group
-              :mapped-to mapped-to
-              :attr-name name
-              :on-change (fn [source e]
-                           (rf/dispatch [:mapping/>update-map-attr
-                                         {:name    name
-                                          :subattr sub-name
-                                          :entity  (if (= source :group)
-                                                     (-> e .-target .-value)
-                                                     group)
-                                          :mapping (if (= source :mapped-to)
-                                                     (-> e .-target .-value)
-                                                     mapped-to)}]))}]])]])]))
+             {:group               group
+              :mapped-to           mapped-to
+              :attr-name           name
+              :on-mapped-to-change #(rf/dispatch [:mapping/>set-object-mapped-to id sub-attr-id (-> % .-target .-value)])
+              :on-group-change     #(rf/dispatch [:mapping/>set-object-group id sub-attr-id (-> % .-target .-value)])}]])]])]))
+
 
