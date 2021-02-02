@@ -6,32 +6,9 @@
     [reitit.frontend.controllers :as rfc]
     [clojure.edn :as edn]
     [clojure.data :as data]
-    [scimmer.app-db :as app-db]))
-
-;; Schema subscriptions
-(rf/reg-sub
-  :mapping/all-attrs
-  (fn [db _]
-    (get-in db [:mapping :children])))
-
-(rf/reg-sub
-  :mapping/single-attrs
-  :<- [:mapping/all-attrs]
-  (fn [all-attrs _]
-    (filterv (fn [[_name _props schema]]
-               (not (contains? #{:map :vector} (:type schema)))) all-attrs)))
-
-(rf/reg-sub
-  :mapping/map-attrs
-  :<- [:mapping/all-attrs]
-  (fn [all-attrs _]
-    (filterv (fn [[_name _props schema]] (= :map (:type schema))) all-attrs)))
-
-(rf/reg-sub
-  :mapping/array-attrs
-  :<- [:mapping/all-attrs]
-  (fn [all-attrs]
-    (filterv (fn [[_name _props schema]] (= :vector (:type schema))) all-attrs)))
+    [scimmer.app-db :as app-db]
+    [scimmer.services.mapping :refer [build-resource]]
+    [scimmer.mapping.utils :refer [single-attr->schema object-attr->schema array-attr->schema]]))
 
 ;; Resource subscriptions
 (rf/reg-sub
@@ -39,8 +16,27 @@
   (fn [db _]
     (:resource db)))
 
+(rf/reg-sub
+  :mapping/resource-json
+  :<- [:mapping/resource]
+  (fn [resource]
+    (.stringify js/JSON (clj->js resource) nil 2)))
+
+
 ;; Entities subscriptions
 (rf/reg-sub
   :mapping/entities
-  (fn [db _]
-    (:entities db)))
+  :<- [:mapping/resource]
+  :<- [:mapping/single-attrs]
+  :<- [:mapping/object-attrs]
+  :<- [:mapping/array-attrs]
+  (fn [[resource singles objects arrays] _]
+    (js/console.log [resource singles objects arrays])
+    (let [single-attrs (map single-attr->schema singles)
+          object-attrs (map object-attr->schema objects)
+          array-attrs (map array-attr->schema arrays)
+          schema (hash-map :type :map
+                           :children (concat single-attrs object-attrs array-attrs))]
+      (build-resource schema resource [] {} {}))))
+
+

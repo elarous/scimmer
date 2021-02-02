@@ -1,4 +1,4 @@
-(ns scimmer.mapping.views
+(ns scimmer.mapping.entities-card.views
   (:require ["react" :as re]
             [reagent.core :as r]
             [re-frame.core :as rf]
@@ -9,21 +9,13 @@
             [scimmer.theme :refer [colors]]
             [scimmer.mapping.subs]
             [scimmer.mapping.events]
-            [scimmer.mapping.styles :as stl]
+            [scimmer.mapping.entities-card.styles :as stl]
             [scimmer.mapping.card.views :refer [card header]]
             [scimmer.mapping.schema-card.views :refer [schema-card]]
-            [scimmer.mapping.resource-card.views :refer [resource-card]]
-            [scimmer.mapping.entities-card.views :refer [entities-card]]))
+            [scimmer.mapping.resource-card.views :refer [resource-card]]))
 
-(defn mapping-page []
-  [:div {:class (<class stl/container)}
-   [:> Grommet {:theme (clj->js stl/grommet-theme)
-                :class (<class stl/grommet)}
-    [:div {:class (<class stl/grid)}
-     ^{:key "schema-card"}
-     [schema-card]
-     ^{:key "resource-card"}
-     [resource-card]
-     ^{:key "entities-card"}
-     [entities-card]]]])
-
+(defn entities-card []
+  [card {}
+   [header "Entities" "User"]
+   [:pre {:class (<class stl/entities)}
+    (.stringify js/JSON (clj->js @(rf/subscribe [:mapping/entities])) nil 2)]])
