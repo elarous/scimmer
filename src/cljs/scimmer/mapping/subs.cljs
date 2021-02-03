@@ -20,7 +20,13 @@
   :mapping/resource-json
   :<- [:mapping/resource]
   (fn [resource]
-    (.stringify js/JSON (clj->js resource) nil 2)))
+    (clj->js resource)))
+
+(rf/reg-sub
+  :mapping/resource-json-str
+  :<- [:mapping/resource-json]
+  (fn [json]
+    (.stringify js/JSON json nil 2)))
 
 
 ;; Entities subscriptions
@@ -38,5 +44,12 @@
           schema (hash-map :type :map
                            :children (concat single-attrs object-attrs array-attrs))]
       (build-resource schema resource [] {} {}))))
+
+(rf/reg-sub
+  :mapping/entities-json
+  :<- [:mapping/entities]
+  (fn [entities _]
+    (.stringify js/JSON (clj->js entities) nil 2)))
+
 
 
