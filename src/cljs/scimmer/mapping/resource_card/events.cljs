@@ -16,6 +16,7 @@
 
 (rf/reg-event-db
   :mapping/>set-resource
-  (fn [db [_ str-resource]]
-    (let [resource (js->clj (.parse js/JSON str-resource) :keywordize-keys true)]
+  (fn [db [_ resource-json]]
+    (let [resource (js->clj resource-json  :keywordize-keys true)]
       (assoc db :resource resource))))
+
