@@ -1,4 +1,4 @@
-(ns scimmer.mapping.schema-card.object-attrs-section.object-attr.views
+(ns scimmer.mapping.schema-card.object-attr.views
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
             [herb.core :refer [<class join]]

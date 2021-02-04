@@ -1,4 +1,4 @@
-(ns scimmer.mapping.schema-card.single-attrs-section.single-attr.events
+(ns scimmer.mapping.schema-card.single-attr.events
   (:require
     [re-frame.core :as rf]
     [ajax.core :as ajax]

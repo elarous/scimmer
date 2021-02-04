@@ -12,7 +12,7 @@
             [scimmer.mapping.styles :as stl]
             [scimmer.mapping.card.views :refer [card header]]
             [scimmer.mapping.schema-card.attribute.views :refer [attribute]]
-            [scimmer.mapping.schema-card.array-attrs-section.array-attr.views :refer [array-attr array-attr-item]]
+            [scimmer.mapping.schema-card.array-attr.views :refer [array-attr array-attr-item]]
             [scimmer.mapping.schema-card.utils :refer [get-entity-mapping get-mapping-attr-item]]))
 
 (defn arrays-section [{:keys [set-attr remove-attr]}]
