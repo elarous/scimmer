@@ -1,5 +1,12 @@
 (ns scimmer.mapping.utils)
 
+(defn assoc-id
+  "To be used with a map func over a hash-map to assoc the key as an :id
+  ex: {1 {:name \"first\"} 2 {:name \"second\"}}
+  becomes: [{:id 1 :name \"first\"} {:id 2 :name \"second\"}] "
+  [[k v]]
+  (assoc v :id k))
+
 (defn single-attr->schema [{:keys [name mapped-to group]}]
   (vector (keyword name)
           {:scimmer.services.schema/mapping (keyword group mapped-to)}

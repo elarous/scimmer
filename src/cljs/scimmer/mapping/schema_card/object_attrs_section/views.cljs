@@ -11,7 +11,7 @@
             [scimmer.mapping.events]
             [scimmer.mapping.card.views :refer [card header]]
             [scimmer.mapping.schema-card.attribute.views :refer [attribute]]
-            [scimmer.mapping.schema-card.object-attrs-section.object-attr.views :refer [object-attr sub-attr object-inputs]]
+            [scimmer.mapping.schema-card.object-attr.views :refer [object-attr sub-attr object-inputs]]
             [scimmer.mapping.schema-card.utils :refer [get-entity-mapping get-mapping-attr-item]]))
 
 (defn objects-section [{:keys [set-attr remove-attr]}]

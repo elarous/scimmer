@@ -1,4 +1,4 @@
-(ns scimmer.mapping.schema-card.object-attrs-section.object-attr.styles
+(ns scimmer.mapping.schema-card.object-attr.styles
   (:require [scimmer.theme :refer [sizes colors fonts]]))
 
 (defn object-attr []

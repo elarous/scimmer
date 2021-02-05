@@ -1,4 +1,4 @@
-(ns scimmer.mapping.schema-card.array-attrs-section.array-attr.styles
+(ns scimmer.mapping.schema-card.array-attr.styles
   (:require [scimmer.theme :refer [colors fonts sizes shadows]]))
 
 (defn array-attr []

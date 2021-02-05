@@ -1,4 +1,4 @@
-(ns scimmer.mapping.schema-card.single-attrs-section.single-attr.styles
+(ns scimmer.mapping.schema-card.single-attr.styles
   (:require [scimmer.theme :refer [sizes]]))
 
 (defn single-attr []

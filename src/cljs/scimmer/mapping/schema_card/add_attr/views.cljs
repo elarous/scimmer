@@ -11,24 +11,19 @@
             [scimmer.mapping.events]
             [scimmer.mapping.schema-card.add-attr.styles :as stl]))
 
-(defn add-attr-modal [{:keys [on-close]}]
+(defn add-attr-modal [{:keys [on-close on-add-single on-add-object on-add-array]}]
   [:> Layer {:on-esc           on-close
              :on-click-outside on-close}
    [:div {:class (<class stl/add-modal)}
     [:h2 {:class (<class stl/add-modal-title)} "Which kind of attribute?"]
     [:div {:class (<class stl/buttons)}
      [:button {:class    (<class stl/button)
-               :on-click (fn [_]
-                           (rf/dispatch [:mapping/>add-single-attr])
-                           (on-close))}
+               :on-click on-add-single}
       [:div {:class (<class stl/icon)} "1"] "Single"]
      [:button {:class    (<class stl/button)
-               :on-click (fn [_]
-                           (rf/dispatch [:mapping/>add-object-attr])
-                           (on-close))}
+               :on-click on-add-object}
       [:div {:class (<class stl/icon)} "{}"] "Object"]
      [:button {:class    (<class stl/button)
-               :on-click (fn [_]
-                           (rf/dispatch [:mapping/>add-array-attr])
-                           (on-close))}
+               :on-click on-add-array}
       [:div {:class (<class stl/icon)} "[]"] "Array"]]]])
+

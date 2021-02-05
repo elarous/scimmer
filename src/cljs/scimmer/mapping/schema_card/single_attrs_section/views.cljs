@@ -9,7 +9,7 @@
             [scimmer.mapping.events]
             [scimmer.mapping.card.views :refer [card header]]
             [scimmer.mapping.schema-card.attribute.views :refer [attribute]]
-            [scimmer.mapping.schema-card.single-attrs-section.single-attr.views :refer [single-attr]]
+            [scimmer.mapping.schema-card.single-attr.views :refer [single-attr]]
             [scimmer.mapping.schema-card.utils :refer [get-entity-mapping get-mapping-attr-item]]))
 
 (defn singles-section [{:keys [set-attr remove-attr]}]
