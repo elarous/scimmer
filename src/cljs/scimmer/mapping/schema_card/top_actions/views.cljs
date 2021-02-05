@@ -16,10 +16,42 @@
 
 (defn top-actions []
   (r/with-let [attr-modal-visible? (r/atom false)
-               on-close #(reset! attr-modal-visible? false)]
+               on-close #(reset! attr-modal-visible? false)
+               on-add-single (fn [_]
+                               (rf/dispatch [:mapping/>add-single-attr])
+                               (on-close))
+               on-add-object (fn [_]
+                               (rf/dispatch [:mapping/>add-object-attr])
+                               (on-close))
+               on-add-array (fn [_]
+                              (rf/dispatch [:mapping/>add-array-attr])
+                              (on-close))]
     [:div
      (when @attr-modal-visible?
-       [add-attr-modal {:on-close on-close}])
+       [add-attr-modal {:on-close on-close :on-add-single on-add-single :on-add-object on-add-object :on-add-array on-add-array}])
+     [:div {:class (<class stl/top-actions)}
+      [:> Anchor {:on-click #(reset! attr-modal-visible? true)
+                  :margin   "xsmall"
+                  :color    (:secondary colors)
+                  :size     "small"
+                  :icon     (r/create-element Add #js {:size "small"})
+                  :label    "Add attribute"}]]]))
+
+(defn top-actions-ext [ext-id]
+  (r/with-let [attr-modal-visible? (r/atom false)
+               on-close #(reset! attr-modal-visible? false)
+               on-add-single (fn [_]
+                               (rf/dispatch [:mapping/>add-ext-single-attr ext-id])
+                               (on-close))
+               on-add-object (fn [_]
+                               (rf/dispatch [:mapping/>add-ext-object-attr ext-id])
+                               (on-close))
+               on-add-array (fn [_]
+                              (rf/dispatch [:mapping/>add-ext-array-attr ext-id])
+                              (on-close))]
+    [:div
+     (when @attr-modal-visible?
+       [add-attr-modal {:on-close on-close :on-add-single on-add-single :on-add-object on-add-object :on-add-array on-add-array}])
      [:div {:class (<class stl/top-actions)}
       [:> Anchor {:on-click #(reset! attr-modal-visible? true)
                   :margin   "xsmall"

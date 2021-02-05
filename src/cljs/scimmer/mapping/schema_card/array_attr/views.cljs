@@ -27,9 +27,9 @@
                :on-click on-remove}]])
 
 (defn array-attr
-  ([attr-id body]
-   (array-attr attr-id {} body))
-  ([attr-id {:keys [on-add]} body]
+  ([body]
+   (array-attr {} body))
+  ([{:keys [on-add]} body]
    [:div {:class (<class stl/array-attr)}
     body
     [:div {:class (<class stl/add-btn-container)}

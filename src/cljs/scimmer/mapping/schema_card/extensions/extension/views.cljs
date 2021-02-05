@@ -1,6 +1,7 @@
 (ns scimmer.mapping.schema-card.extensions.extension.views
   (:require [re-frame.core :as rf]
             [herb.core :refer [<class]]
+            [scimmer.mapping.schema-card.top-actions.views :refer [top-actions-ext]]
             [scimmer.mapping.schema-card.extensions.extension.styles :as stl]
             [scimmer.mapping.schema-card.attribute.views :refer [attribute]]
             [scimmer.mapping.schema-card.single-attr.views :refer [single-attr]]
@@ -10,6 +11,7 @@
 (defn extension [ext]
   [:div
    [:div {:class (<class stl/label)} (:label ext)]
+   [top-actions-ext (:id ext)]
    (let [set-attr #(rf/dispatch [:mapping/>set-ext-attr (:id ext) %1 %2])
          remove-attr #(rf/dispatch [:mapping/>remove-ext-attr (:id ext) %])
          singles @(rf/subscribe [:mapping/ext-singles (:id ext)])
@@ -44,7 +46,7 @@
          ^{:key id}
          [attribute name {:on-change #(set-attr id (-> % .-target .-value))
                           :on-remove #(remove-attr id)}
-          [array-attr id
+          [array-attr
            {:on-add #(rf/dispatch [:mapping/>add-ext-sub-item (:id ext) id])}
            (for [{sub-item-id :id mapped-to :mapped-to type :type group :group} sub-items]
              ^{:key sub-item-id}
