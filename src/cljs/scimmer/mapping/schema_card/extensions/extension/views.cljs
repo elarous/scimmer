@@ -10,42 +10,50 @@
 (defn extension [ext]
   [:div
    [:div {:class (<class stl/label)} (:label ext)]
-   (let [singles @(rf/subscribe [:mapping/ext-singles (:id ext)])
+   (let [set-attr #(rf/dispatch [:mapping/>set-ext-attr (:id ext) %1 %2])
+         remove-attr #(rf/dispatch [:mapping/>remove-ext-attr (:id ext) %])
+         singles @(rf/subscribe [:mapping/ext-singles (:id ext)])
          objects @(rf/subscribe [:mapping/ext-objects (:id ext)])
          arrays @(rf/subscribe [:mapping/ext-arrays (:id ext)])]
      (concat
        (for [{:keys [id name group mapped-to]} singles]
-         [attribute name {}
+         [attribute name {:on-change #(set-attr id (-> % .-target .-value))
+                          :on-remove #(remove-attr id)}
           [single-attr {:group               group
                         :mapped-to           mapped-to
-                        :on-group-change     #(rf/dispatch [:mapping/>set-single-group id % (:id ext)])
-                        :on-mapped-to-change #(rf/dispatch [:mapping/>set-single-mapped-to id % (:id ext)])}]])
+                        :on-group-change     #(rf/dispatch [:mapping/>set-ext-single-group (:id ext) id %])
+                        :on-mapped-to-change #(rf/dispatch [:mapping/>set-ext-single-mapped-to (:id ext) id %])}]])
        (for [{:keys [id name sub-attrs]} objects]
          ^{:key id}
-         [attribute name {}
+         [attribute name {:on-change #(set-attr id (-> % .-target .-value))
+                          :on-remove #(remove-attr id)}
           [object-attr
-           {}
+           {:on-add-sub-attr #(rf/dispatch [:mapping/>add-ext-sub-attr (:id ext) id])}
            (for [{sub-attr-id :id sub-name :name mapped-to :mapped-to group :group} sub-attrs]
              ^{:key sub-attr-id}
-             [sub-attr sub-name {}
+             [sub-attr sub-name
+              {:on-change #(rf/dispatch [:mapping/>set-ext-sub-attr (:id ext) id sub-attr-id (-> % .-target .-value)])
+               :on-remove #(rf/dispatch [:mapping/>remove-ext-sub-attr (:id ext) id sub-attr-id])}
               [object-inputs
                {:group               group
                 :mapped-to           mapped-to
                 :attr-name           name
-                :on-mapped-to-change identity
-                :on-group-change     identity}]])]])
+                :on-mapped-to-change #(rf/dispatch [:mapping/>set-ext-object-mapped-to (:id ext) id sub-attr-id (-> % .-target .-value)])
+                :on-group-change     #(rf/dispatch [:mapping/>set-ext-object-group (:id ext) id sub-attr-id (-> % .-target .-value)])}]])]])
        (for [{:keys [id name sub-items]} arrays]
          ^{:key id}
-         [attribute name {}
+         [attribute name {:on-change #(set-attr id (-> % .-target .-value))
+                          :on-remove #(remove-attr id)}
           [array-attr id
+           {:on-add #(rf/dispatch [:mapping/>add-ext-sub-item (:id ext) id])}
            (for [{sub-item-id :id mapped-to :mapped-to type :type group :group} sub-items]
              ^{:key sub-item-id}
              [array-attr-item
               {:group               group
                :type                type
                :mapped-to           mapped-to
-               :on-remove           #(rf/dispatch [:mapping/>remove-sub-item id sub-item-id])
-               :on-type-change      #(rf/dispatch [:mapping/>set-array-type id sub-item-id (-> % .-target .-value)])
-               :on-group-change     #(rf/dispatch [:mapping/>set-array-group id sub-item-id (-> % .-target .-value)])
-               :on-mapped-to-change #(rf/dispatch [:mapping/>set-array-mapped-to id sub-item-id (-> % .-target .-value)])}])]])))])
+               :on-remove           #(rf/dispatch [:mapping/>remove-ext-sub-item (:id ext) id sub-item-id])
+               :on-type-change      #(rf/dispatch [:mapping/>set-ext-array-type (:id ext) id sub-item-id (-> % .-target .-value)])
+               :on-group-change     #(rf/dispatch [:mapping/>set-ext-array-group (:id ext) id sub-item-id (-> % .-target .-value)])
+               :on-mapped-to-change #(rf/dispatch [:mapping/>set-ext-array-mapped-to (:id ext) id sub-item-id (-> % .-target .-value)])}])]])))])
 

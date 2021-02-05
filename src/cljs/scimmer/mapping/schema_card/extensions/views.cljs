@@ -3,6 +3,7 @@
             [re-frame.core :as rf]
             [herb.core :refer [<class]]
             [scimmer.mapping.schema-card.extensions.subs]
+            [scimmer.mapping.schema-card.extensions.events]
             [scimmer.mapping.schema-card.extensions.styles :as stl]
             [scimmer.mapping.schema-card.extensions.extension.views :refer [extension]]))
 

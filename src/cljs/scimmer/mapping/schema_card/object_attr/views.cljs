@@ -4,9 +4,9 @@
             [herb.core :refer [<class join]]
             ["grommet" :refer [Anchor Grommet Button Heading Select Grid Box TextInput FormField]]
             ["grommet-icons" :refer [AddCircle Trash]]
-            [scimmer.mapping.schema-card.object-attrs-section.object-attr.styles :as stl]
+            [scimmer.mapping.schema-card.object-attr.styles :as stl]
             [scimmer.mapping.schema-card.input.views :refer [input]]
-            [scimmer.mapping.schema-card.object-attrs-section.object-attr.events]))
+            [scimmer.mapping.schema-card.object-attr.events]))
 
 
 (defn object-inputs [{:keys [group mapped-to on-group-change on-mapped-to-change]}]
