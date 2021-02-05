@@ -4,7 +4,7 @@
             [re-frame.core :as rf]
             [herb.core :refer [<class]]
             ["grommet" :refer [Anchor Grommet Button Heading Select Grid Box TextInput FormField Layer]]
-            ["grommet-icons" :refer [Add]]
+            ["grommet-icons" :refer [Add Close]]
             [scimmer.utils :refer [debounce]]
             [scimmer.theme :refer [colors]]
             [scimmer.mapping.subs]
@@ -49,13 +49,17 @@
                on-add-array (fn [_]
                               (rf/dispatch [:mapping/>add-ext-array-attr ext-id])
                               (on-close))]
-    [:div
-     (when @attr-modal-visible?
-       [add-attr-modal {:on-close on-close :on-add-single on-add-single :on-add-object on-add-object :on-add-array on-add-array}])
-     [:div {:class (<class stl/top-actions)}
+    [:div {:class (<class stl/top-actions)}
+     [:div
+      (when @attr-modal-visible?
+        [add-attr-modal {:on-close      on-close
+                         :on-add-single on-add-single
+                         :on-add-object on-add-object
+                         :on-add-array  on-add-array}])
       [:> Anchor {:on-click #(reset! attr-modal-visible? true)
                   :margin   "xsmall"
                   :color    (:secondary colors)
                   :size     "small"
                   :icon     (r/create-element Add #js {:size "small"})
                   :label    "Add attribute"}]]]))
+

@@ -11,6 +11,9 @@
    :margin-bottom (sizes 5)
    :color         (:primary colors)
    :padding-left  (sizes 2)
-   :border-bottom (str "1px solid " (:grey-3 colors))})
+   :border-bottom (str "1px solid " (:grey-2 colors))})
 
+(defn footer []
+  {:display         "flex"
+   :justify-content "center"})
 
