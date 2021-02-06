@@ -8,7 +8,7 @@
     [clojure.data :as data]
     [scimmer.app-db :as app-db]
     [scimmer.services.mapping :refer [build-resource]]
-    [scimmer.mapping.utils :refer [single-attr->schema object-attr->schema array-attr->schema]]))
+    [scimmer.mapping.utils :refer [single-attr->schema object-attr->schema array-attr->schema extension->schema]]))
 
 ;; Resource subscriptions
 (rf/reg-sub
@@ -28,7 +28,6 @@
   (fn [json]
     (.stringify js/JSON json nil 2)))
 
-
 ;; Entities subscriptions
 (rf/reg-sub
   :mapping/entities
@@ -36,13 +35,14 @@
   :<- [:mapping/single-attrs]
   :<- [:mapping/object-attrs]
   :<- [:mapping/array-attrs]
-  (fn [[resource singles objects arrays] _]
-    (js/console.log [resource singles objects arrays])
+  :<- [:mapping/extensions]
+  (fn [[resource singles objects arrays exts] _]
     (let [single-attrs (map single-attr->schema singles)
           object-attrs (map object-attr->schema objects)
           array-attrs (map array-attr->schema arrays)
+          extensions (map extension->schema exts)
           schema (hash-map :type :map
-                           :children (concat single-attrs object-attrs array-attrs))]
+                           :children (vec (concat single-attrs object-attrs array-attrs extensions)))]
       (build-resource schema resource [] {} {}))))
 
 (rf/reg-sub
