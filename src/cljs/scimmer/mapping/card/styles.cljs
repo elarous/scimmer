@@ -29,8 +29,10 @@
    :padding                 (sizes 2)})
 
 (defn body []
-  {:flex     1
-   :overflow "auto"})
+  {:flex           1
+   :display        "flex"
+   :flex-direction "column"
+   :overflow       "auto"})
 
 (defn card []
   {:border-radius  (sizes 1)

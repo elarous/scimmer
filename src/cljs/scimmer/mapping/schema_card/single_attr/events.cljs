@@ -5,8 +5,7 @@
     [reitit.frontend.easy :as rfe]
     [reitit.frontend.controllers :as rfc]
     [scimmer.app-db :as app-db]
-    [scimmer.services.mapping :refer [build-resource]]
-    [scimmer.mapping.schema-card.events :refer [attr-interceptor get-attr-idx]]))
+    [scimmer.services.mapping :refer [build-resource]]))
 
 ;; update
 (rf/reg-event-db
