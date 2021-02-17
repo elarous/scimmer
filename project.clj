@@ -63,9 +63,9 @@
   :target-path "target/%s/"
   :main ^:skip-aot scimmer.core
 
-  :plugins [[lein-shadow "0.2.0"]] 
-  :clean-targets ^{:protect false}
-  [:target-path "target/cljsbuild"]
+  :plugins [[lein-shadow "0.2.0"]]
+
+  :clean-targets ^{:protect false} [:target-path "target/cljsbuild"]
   :shadow-cljs
   {:nrepl {:port 7002}
    :builds
@@ -83,7 +83,7 @@
     {:target :node-test
      :output-to "target/test/test.js"
      :autorun true}}}
-  
+
   :npm-deps []
   :npm-dev-deps [[xmlhttprequest "1.8.0"]]
 
