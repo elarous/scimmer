@@ -50,6 +50,7 @@
                  [selmer "1.12.31"]
                  [thheller/shadow-cljs "2.11.5" :scope "provided"]
                  [honeysql "1.0.444"]
+                 [nilenso/honeysql-postgres "0.2.6"]
                  [org.clojars.rkaippully/scim-patch "1.0.0"]
                  [clj-commons/cljss "1.6.4"]
                  [herb "0.10.0"]

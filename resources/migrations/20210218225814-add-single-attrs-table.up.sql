@@ -3,8 +3,10 @@ CREATE TABLE single_attrs(
   name VARCHAR(50) NOT NULL,
   mapped_to VARCHAR(50) NOT NULL,
   collection VARCHAR(50) NOT NULL,
-  container_id uuid NOT NULL,
+  schema_id uuid,
+  extension_id uuid,
+
   PRIMARY KEY (id),
-  CONSTRAINT fk_schema FOREIGN KEY (container_id) REFERENCES schemas (id),
-  CONSTRAINT fk_extension FOREIGN KEY (container_id) REFERENCES extensions (id)
+  CONSTRAINT fk_schema FOREIGN KEY (schema_id) REFERENCES schemas (id),
+  CONSTRAINT fk_extension FOREIGN KEY (extension_id) REFERENCES extensions (id)
 );
