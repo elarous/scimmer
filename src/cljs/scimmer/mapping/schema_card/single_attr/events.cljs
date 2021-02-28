@@ -9,16 +9,16 @@
 
 ;; update
 (rf/reg-event-db
-  :mapping/>set-single-group
+  :mapping/>set-single-collection
   [(rf/path :schema)]
-  (fn [schema [_ id group]]
-    (assoc-in schema [id :group] group)))
+  (fn [schema [_ id collection]]
+    (assoc-in schema [id :collection] collection)))
 
 (rf/reg-event-db
-  :mapping/>set-ext-single-group
+  :mapping/>set-ext-single-collection
   [(rf/path :extensions)]
-  (fn [exts [_ ext-id id group]]
-    (assoc-in exts [ext-id :attrs id :group] group)))
+  (fn [exts [_ ext-id id collection]]
+    (assoc-in exts [ext-id :attrs id :collection] collection)))
 
 (rf/reg-event-db
   :mapping/>set-single-mapped-to
@@ -37,7 +37,7 @@
   {:type      :single
    :name      "newAttribute"
    :mapped-to "new_attribute"
-   :group     "user"})
+   :collection     "user"})
 
 (rf/reg-event-db
   :mapping/>add-single-attr

@@ -4,7 +4,13 @@
 (rf/reg-sub
   :mapping/single-attrs
   (fn [db _]
-    (->> (get db :schema)
+    (->> (get-in db [:schema :attrs])
          (map (fn [[k v]] (assoc v :id k)))
-         (filter #(= :single (:type %))))))
+         (filter #(= "single" (:type %))))))
 
+
+(comment
+  @(rf/subscribe [:mapping/single-attrs])
+
+
+  ,)

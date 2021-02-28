@@ -37,21 +37,21 @@
      {:type      :single
       :name      "id"
       :mapped-to "uuid"
-      :group     "user"}
+      :collection     "user"}
      #uuid "aaaaaaa-061d-45f1-8d92-db5627a156f2"
      {:type      :object
       :name      "name"
       :sub-attrs {#uuid "459e1f73-4356-4422-b60b-6f006908daa6"
                   {:name      "familyName"
                    :mapped-to "last_name"
-                   :group     "user"}}}
+                   :collection     "user"}}}
      #uuid "bbbabbb-061d-45f1-8d92-db5627a156f2"
      {:type      :array
       :name      "phoneNumbers"
       :sub-items {#uuid "de72b3bd-4ce3-4ea0-b90b-337d4fbebc5f"
                   {:mapped-to "mobile_phone"
                    :type      "mobile"
-                   :group     "user"}}}}))
+                   :collection     "user"}}}}))
 
 
 

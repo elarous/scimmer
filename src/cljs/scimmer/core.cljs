@@ -39,7 +39,8 @@
   (reitit/router
     [["/" {:name :mapping
            :view #'home-page
-           #_:controllers #_[{:start (fn [_] (rf/dispatch [:mapping/>gen-keys]))}]}]
+           :controllers [{:start #(rf/dispatch [:mapping/>load-schemas!])}]}]
+
      ["/about" {:name :about
                 :view #'about-page}]]))
 

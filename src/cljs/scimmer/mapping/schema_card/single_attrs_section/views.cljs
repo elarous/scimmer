@@ -15,14 +15,13 @@
 (defn singles-section [{:keys [set-attr remove-attr]}]
   (let [single-attrs @(rf/subscribe [:mapping/single-attrs])]
     [:<>
-     (for [{:keys [id name mapped-to group]} single-attrs]
+     (for [{:keys [id name mapped-to collection]} single-attrs]
        ^{:key id}
        [attribute name {:on-change #(set-attr id (-> % .-target .-value))
                         :on-remove #(remove-attr id)}
         [single-attr
-         {:group     group
+         {:collection     collection
           :mapped-to mapped-to
-          :on-group-change  #(rf/dispatch [:mapping/>set-single-group id %])
+          :on-collection-change  #(rf/dispatch [:mapping/>set-single-collection id %])
           :on-mapped-to-change #(rf/dispatch [:mapping/>set-single-mapped-to id %])}]])]))
-
 

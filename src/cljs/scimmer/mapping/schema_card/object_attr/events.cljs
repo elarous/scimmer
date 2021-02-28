@@ -23,7 +23,7 @@
 (def default-sub-attr
   {:name      "subAttr"
    :mapped-to "sub_attr"
-   :group     "user"})
+   :collection     "user"})
 
 (rf/reg-event-db
   :mapping/>add-sub-attr
@@ -62,16 +62,16 @@
     (assoc-in exts [ext-id :attrs attr-id :sub-attrs sub-attr-id :mapped-to] mapped-to)))
 
 (rf/reg-event-db
-  :mapping/>set-object-group
+  :mapping/>set-object-collection
   [(rf/path :schema)]
-  (fn [schema [_ attr-id sub-attr-id group]]
-    (assoc-in schema [attr-id :sub-attrs sub-attr-id :group] group)))
+  (fn [schema [_ attr-id sub-attr-id collection]]
+    (assoc-in schema [attr-id :sub-attrs sub-attr-id :collection] collection)))
 
 (rf/reg-event-db
-  :mapping/>set-ext-object-group
+  :mapping/>set-ext-object-collection
   [(rf/path :extensions)]
-  (fn [exts [_ ext-id attr-id sub-attr-id group]]
-    (assoc-in exts [ext-id :attrs attr-id :sub-attrs sub-attr-id :group] group)))
+  (fn [exts [_ ext-id attr-id sub-attr-id collection]]
+    (assoc-in exts [ext-id :attrs attr-id :sub-attrs sub-attr-id :collection] collection)))
 
 (def default-object-attr
   {:type      :object

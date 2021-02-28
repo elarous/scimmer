@@ -54,7 +54,8 @@
                  [org.clojars.rkaippully/scim-patch "1.0.0"]
                  [clj-commons/cljss "1.6.4"]
                  [herb "0.10.0"]
-                 [clj-http "3.11.0"]]
+                 [clj-http "3.11.0"]
+                 [camel-snake-kebab "0.4.2"]]
 
   :min-lein-version "2.0.0"
   

@@ -9,12 +9,12 @@
             [scimmer.mapping.schema-card.object-attr.events]))
 
 
-(defn object-inputs [{:keys [group mapped-to on-group-change on-mapped-to-change]}]
+(defn object-inputs [{:keys [collection mapped-to on-collection-change on-mapped-to-change]}]
   [:div {:class (<class stl/object-subattr-inputs)}
-   [input {:name        "group"
-           :placeholder "Group"
-           :value       group
-           :on-change   on-group-change}]
+   [input {:name        "collection"
+           :placeholder "Collection"
+           :value       collection
+           :on-change   on-collection-change}]
    [input {:name        "mapped to"
            :placeholder "Mapped To"
            :value       mapped-to

@@ -10,6 +10,12 @@
     [scimmer.services.mapping :refer [build-resource]]
     [scimmer.mapping.utils :refer [single-attr->schema object-attr->schema array-attr->schema extension->schema]]))
 
+;; Schema subscriptions
+(rf/reg-sub
+ :mapping/schema
+ (fn [db _]
+   (:schema db)))
+
 ;; Resource subscriptions
 (rf/reg-sub
   :mapping/resource
@@ -43,7 +49,9 @@
           extensions (map extension->schema exts)
           schema (hash-map :type :map
                            :children (vec (concat single-attrs object-attrs array-attrs extensions)))]
-      (build-resource schema resource [] {} {}))))
+      (try
+        (build-resource schema resource [] {} {})
+        (catch js/Error e (js/console.error e))))))
 
 (rf/reg-sub
   :mapping/entities-json

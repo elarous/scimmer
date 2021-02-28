@@ -4,6 +4,8 @@
             [honeysql-postgres.helpers :as hp]
             [honeysql-postgres.format]
             [next.jdbc :as jdbc]
+            [camel-snake-kebab.core :as csk]
+            [camel-snake-kebab.extras :as cske]
             [scimmer.db.core :refer [*db*]]))
 
 ;; helpers
@@ -15,7 +17,8 @@
 
 (defn- unqualify-keys [m]
   (->> (map (fn [[k v]] [(-> k name keyword) v]) m)
-       (into {})))
+       (into {})
+       (cske/transform-keys csk/->kebab-case-keyword)))
 
 ;; queries
 (defn- save-schema-query [schema]
@@ -160,8 +163,10 @@
     (map unqualify-keys result)))
 
 (defn- compose-attrs [attrs]
-  (let [grouped-sub-attrs (group-by :object_attr_id (:sub-attrs attrs))
-        grouped-sub-items (group-by :array_attr_id (:sub-items attrs))
+  (let [grouped-sub-attrs (group-by :object-attr-id (:sub-attrs attrs))
+        grouped-sub-items (group-by :array-attr-id (:sub-items attrs))
+        _ (def gsa grouped-sub-attrs)
+        _ (def gsi grouped-sub-items)
         single-attrs      (map #(assoc % :type :single) (:single-attrs attrs))
         object-attrs      (map
                       (fn [object-attr]
@@ -231,13 +236,23 @@
         extensions (find-extensions! schema-id)]
    (assoc schema :extensions extensions)))
 
+;; service functions
+
+(defn get-all [_request]
+  (all!))
+
+(defn get-schema [request]
+  (let [id (get-in request [:path-params :id])]
+    (find-schema! (java.util.UUID/fromString id))))
+;;
+
 (comment
   (tap>
-   (find-schema #uuid "0ea136ad-061d-45f1-8d92-005627a156f9")
+   (find-schema! #uuid "0ea136ad-061d-45f1-8d92-005627a156f9")
    )
 
   (tap>
-   (find-extensions #uuid "7a224f1a-f80f-4238-b89c-56aec5b6f784"))
+   (find-extensions! #uuid "7a224f1a-f80f-4238-b89c-56aec5b6f784"))
 
 
   (tap>
@@ -303,7 +318,8 @@
                              :type       "mobile"
                              :collection "user"}]}]}]})
 
-  (upsert-schema! data)
+  (tap>
+   (upsert-schema! data))
 
   ,)
 

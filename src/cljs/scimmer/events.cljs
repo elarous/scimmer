@@ -1,6 +1,7 @@
 (ns scimmer.events
   (:require
     [re-frame.core :as rf]
+    [day8.re-frame.http-fx]
     [ajax.core :as ajax]
     [reitit.frontend.easy :as rfe]
     [reitit.frontend.controllers :as rfc]

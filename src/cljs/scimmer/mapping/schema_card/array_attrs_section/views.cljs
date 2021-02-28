@@ -24,14 +24,14 @@
                         :on-remove #(remove-attr id)}
         [array-attr
          {:on-add #(rf/dispatch [:mapping/>add-sub-item id])}
-         (for [{sub-item-id :id mapped-to :mapped-to type :type group :group} sub-items]
+         (for [{sub-item-id :id mapped-to :mapped-to type :type collection :collection} sub-items]
            ^{:key sub-item-id}
            [array-attr-item
-            {:group               group
+            {:collection               collection
              :type                type
              :mapped-to           mapped-to
              :on-remove           #(rf/dispatch [:mapping/>remove-sub-item id sub-item-id])
              :on-type-change      #(rf/dispatch [:mapping/>set-array-type id sub-item-id (-> % .-target .-value)])
-             :on-group-change     #(rf/dispatch [:mapping/>set-array-group id sub-item-id (-> % .-target .-value)])
+             :on-collection-change     #(rf/dispatch [:mapping/>set-array-collection id sub-item-id (-> % .-target .-value)])
              :on-mapped-to-change #(rf/dispatch [:mapping/>set-array-mapped-to id sub-item-id (-> % .-target .-value)])}])]])]))
 

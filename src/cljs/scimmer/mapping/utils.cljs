@@ -7,9 +7,9 @@
   [[k v]]
   (assoc v :id k))
 
-(defn single-attr->schema [{:keys [name mapped-to group]}]
+(defn single-attr->schema [{:keys [name mapped-to collection]}]
   (vector (keyword name)
-          {:scimmer.services.schema/mapping (keyword group mapped-to)}
+          {:scimmer.services.schema/mapping (keyword collection mapped-to)}
           {:type string?}))
 
 (defn object-attr->schema [{:keys [name sub-attrs]}]
@@ -17,9 +17,9 @@
    nil
    {:type :map
     :children
-          (mapv (fn [{:keys [name mapped-to group]}]
+          (mapv (fn [{:keys [name mapped-to collection]}]
                   [(keyword name)
-                   {:scimmer.services.schema/mapping (keyword group mapped-to)}
+                   {:scimmer.services.schema/mapping (keyword collection mapped-to)}
                    {:type string?}]) sub-attrs)}])
 
 (defn array-attr->schema [{:keys [name sub-items]}]
@@ -29,12 +29,12 @@
     :children
           [{:type       :multi
             :properties {:dispatch :type}
-            :children   (mapv (fn [{:keys [mapped-to type group]}]
+            :children   (mapv (fn [{:keys [mapped-to type collection]}]
                                 [(keyword type)
                                  nil
                                  {:type     :map
                                   :children [[:type nil {:type := :children [(keyword type)]}]
-                                             [:value {:scimmer.services.schema/mapping (keyword group mapped-to)} {:type string?}]]}])
+                                             [:value {:scimmer.services.schema/mapping (keyword collection mapped-to)} {:type string?}]]}])
                               sub-items)}]}])
 
 (defn extension->schema [{:keys [label attrs]}]
