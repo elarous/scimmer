@@ -165,8 +165,6 @@
 (defn- compose-attrs [attrs]
   (let [grouped-sub-attrs (group-by :object-attr-id (:sub-attrs attrs))
         grouped-sub-items (group-by :array-attr-id (:sub-items attrs))
-        _ (def gsa grouped-sub-attrs)
-        _ (def gsi grouped-sub-items)
         single-attrs      (map #(assoc % :type :single) (:single-attrs attrs))
         object-attrs      (map
                       (fn [object-attr]

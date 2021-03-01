@@ -6,7 +6,7 @@
   (fn [db _]
     (->> (get-in db [:schema :attrs])
          (map (fn [[k v]] (assoc v :id k)))
-         (filter #(= "single" (:type %))))))
+         (filter #(= :single (:type %))))))
 
 
 (comment

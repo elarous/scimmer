@@ -74,8 +74,8 @@
                   :icon     (r/create-element Down #js {:size      "small"
                                                         :className (<class stl/down-icon @collapsed?)})}]
       [:input {:class        (<class stl/label)
-               :defaultValue (:label ext)
-               :on-change    #(rf/dispatch [:mapping/>set-ext-label (:id ext) (-> % .-target .-value)])
+               :defaultValue (:name ext)
+               :on-change    #(rf/dispatch [:mapping/>set-ext-name (:id ext) (-> % .-target .-value)])
                :type         "text"}]
       [:> Anchor {:on-click #(rf/dispatch [:mapping/>remove-ext (:id ext)])
                   :margin   "xsmall"
@@ -91,6 +91,7 @@
               singles @(rf/subscribe [:mapping/ext-singles (:id ext)])
               objects @(rf/subscribe [:mapping/ext-objects (:id ext)])
               arrays @(rf/subscribe [:mapping/ext-arrays (:id ext)])]
+          (def arrays arrays)
           [:div
            [singles-section {:set-attr set-attr :remove-attr remove-attr :ext ext} singles]
            [objects-section {:set-attr set-attr :remove-attr remove-attr :ext ext} objects]

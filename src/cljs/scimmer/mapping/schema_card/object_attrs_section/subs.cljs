@@ -7,7 +7,7 @@
     (let [assoc-id (fn [[k v]] (assoc v :id k))]
       (->> (get-in db [:schema :attrs])
            (map assoc-id)
-           (filter #(= "object" (:type %)))
+           (filter #(= :object (:type %)))
            (map #(update % :sub-attrs (partial map assoc-id)))))))
 
 (comment

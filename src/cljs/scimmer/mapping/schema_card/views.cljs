@@ -16,7 +16,7 @@
             [scimmer.mapping.schema-card.events]))
 
 (defn schema-card []
-  (let [schema @(rf/subscribe [:mapping/schema])
+  (let [schema @(rf/subscribe [:mapping/schema]) 
         set-attr #(rf/dispatch [:mapping/>set-attr %1 %2])
         remove-attr #(rf/dispatch [:mapping/>remove-attr %1])]
     [card {:class (<class stl/schema-card)}

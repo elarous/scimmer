@@ -3,12 +3,12 @@
 
 (rf/reg-event-db
   :mapping/>set-ext-attr
-  [(rf/path :extensions)]
+  [(rf/path :schema :extensions)]
   (fn [exts [_ ext-id id name]]
     (assoc-in exts [ext-id :attrs id :name] name)))
 
 (rf/reg-event-db
   :mapping/>remove-ext-attr
-  [(rf/path :extensions)]
+  [(rf/path :schema :extensions)]
   (fn [exts [_ ext-id id]]
     (update-in exts [ext-id :attrs] dissoc id)))

@@ -5,13 +5,13 @@
 (rf/reg-sub
   :mapping/extensions
   (fn [db _]
-    (->> (get db :extensions)
+    (->> (get-in db [:schema :extensions])
          (map assoc-id))))
 
 (rf/reg-sub
   :mapping/attrs
   (fn [db [_ id type]]
-    (->> (get-in db [:extensions id])
+    (->> (get-in db [:schema :extensions id]) 
          :attrs
          (map assoc-id)
          (filter #(= type (:type %))))))
@@ -31,11 +31,13 @@
   :mapping/ext-objects
   (attr-getter :object)
   (fn [objects]
-    (map #(update % :sub-attrs (partial map assoc-id)) objects)))
+    objects
+    #_(map #(update % :sub-attrs (partial map assoc-id)) objects)))
 
 (rf/reg-sub
   :mapping/ext-arrays
   (attr-getter :array)
   (fn [arrays]
-    (map #(update % :sub-items (partial map assoc-id)) arrays)))
+    arrays
+    #_(map #(update % :sub-items (partial map assoc-id)) arrays)))
 
