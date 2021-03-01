@@ -18,7 +18,9 @@
  :mapping/>add-ext-sub-item
  [(rf/path :schema :extensions)]
  (fn [exts [_ ext-id attr-id]]
-   (assoc-in exts [ext-id :attrs attr-id :sub-items (random-uuid)] default-sub-item)))
+   (let [id (random-uuid)]
+     (->> (assoc default-sub-item :id id)
+          (assoc-in exts [ext-id :attrs attr-id :sub-items id])))))
 
 (rf/reg-event-db
  :mapping/>remove-sub-item
@@ -85,5 +87,7 @@
  :mapping/>add-ext-array-attr
  [(rf/path :schema :extensions)]
  (fn [exts [_ ext-id]]
-   (assoc-in exts [ext-id :attrs (random-uuid)] default-array-attr)))
+   (let [id (random-uuid)]
+     (->> (assoc default-array-attr :id id)
+          (assoc-in exts [ext-id :attrs id])))))
 

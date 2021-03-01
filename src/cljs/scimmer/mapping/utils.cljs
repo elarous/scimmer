@@ -37,16 +37,9 @@
                                              [:value {:scimmer.services.schema/mapping (keyword collection mapped-to)} {:type string?}]]}])
                               sub-items)}]}])
 
-(defn extension->schema [{:keys [name attrs] :as all}]
+(defn extension->schema [{:keys [name]} singles objects arrays]
   [(keyword (str "urn:ietf:params:scim:schemas:extension:" (clojure.string/lower-case name) ":2.0:User"))
    nil
    {:type :map
-    :children
-          (->> (vals attrs) 
-               (mapv (fn [attr]
-                       (case (:type attr)
-                         :single (single-attr->schema attr)
-                         :object (object-attr->schema attr)
-                         :array (array-attr->schema attr)
-                         (js/console.error "Can't transform attr to schema" attr)))))}])
+    :children (vec (concat singles objects arrays))}])
 

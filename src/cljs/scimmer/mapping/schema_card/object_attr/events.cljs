@@ -29,8 +29,10 @@
  :mapping/>add-ext-sub-attr
  [(rf/path :schema :extensions)]
  (fn [exts [_ ext-id attr-id]]
+   (js/console.log exts ext-id attr-id)
    (let [id (random-uuid)]
-     (assoc-in exts [ext-id :attrs attr-id :sub-attrs id] (assoc default-sub-attr :id id)))))
+     (->> (assoc default-sub-attr :id id)
+          (assoc-in exts [ext-id :attrs attr-id :sub-attrs id])))))
 
 (rf/reg-event-db
  :mapping/>remove-sub-attr
@@ -84,5 +86,7 @@
  :mapping/>add-ext-object-attr
  [(rf/path :schema :extensions)]
  (fn [exts [_ ext-id]]
-   (assoc-in exts [ext-id :attrs (random-uuid)] default-object-attr)))
+   (let [id (random-uuid)]
+     (->> (assoc default-object-attr :id id)
+          (assoc-in exts [ext-id :attrs id])))))
 

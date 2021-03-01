@@ -57,7 +57,8 @@
                         (ok (schemas/get-all req)))}]
     ["/schemas/:id" {:get  (fn [req]
                              (ok (schemas/get-schema req)))
-                     :post schemas/upsert-schema!}]]
+                     :post (fn [req]
+                             (ok (schemas/save-schema req)))}]]
 
    ["/scim"
     ["/v2"

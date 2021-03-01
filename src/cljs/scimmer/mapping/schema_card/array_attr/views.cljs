@@ -16,7 +16,7 @@
            :on-change   on-collection-change}]
    [input {:name        "type"
            :placeholder "Type"
-           :value       (name type)
+           :value       (some-> type name)
            :on-change   on-type-change}]
    [input {:name        "mappedTo"
            :placeholder "Mapped To"

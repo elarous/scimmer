@@ -31,13 +31,11 @@
   :mapping/ext-objects
   (attr-getter :object)
   (fn [objects]
-    objects
-    #_(map #(update % :sub-attrs (partial map assoc-id)) objects)))
+    (map #(update % :sub-attrs (partial map assoc-id)) objects)))
 
 (rf/reg-sub
   :mapping/ext-arrays
   (attr-getter :array)
   (fn [arrays]
-    arrays
-    #_(map #(update % :sub-items (partial map assoc-id)) arrays)))
+    (map #(update % :sub-items (partial map assoc-id)) arrays)))
 

@@ -45,5 +45,7 @@
  :mapping/>add-ext-single-attr
  [(rf/path :schema :extensions)]
  (fn [exts [_ ext-id]]
-   (assoc-in exts [ext-id :attrs (random-uuid)] default-single)))
+   (let [id (random-uuid)]
+     (->> (assoc default-single :id id)
+          (assoc-in exts [ext-id :attrs id] )))))
 
