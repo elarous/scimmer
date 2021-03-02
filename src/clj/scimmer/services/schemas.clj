@@ -8,7 +8,10 @@
             [camel-snake-kebab.extras :as cske]
             [scimmer.db.core :refer [*db*]]))
 
+
 ;; helpers
+
+
 (defn- exec! [query]
   (if-let [db *db*]
     (jdbc/execute! db (sql/format query))
@@ -80,7 +83,7 @@
                        (hp/do-update-set :name container-k)))
         (hp/returning :*))))
 
-(defn- save-sub-attr-query [sub-attrs]
+(defn save-sub-attr-query [sub-attrs]
   (let [data (map #(-> %
                        (select-keys [:id :name :mapped-to :collection :object-attr-id])
                        (snake-case-keys)) sub-attrs)]
@@ -90,7 +93,18 @@
                        (hp/do-update-set :name :mapped_to :collection :object_attr_id)))
         (hp/returning :*))))
 
-(defn- save-sub-item-query [sub-items]
+(defn remove-sub-attrs-query
+  "query to remove all sub-attrs except the ones in `kept-sub-attrs-ids`"
+  [object-ids kept-sub-attrs-ids]
+  (when (seq object-ids)
+    (let [query (-> (h/delete-from :sub_attrs)
+                    (h/where [:in :object_attr_id object-ids]))]
+      (if (seq kept-sub-attrs-ids)
+        (-> query
+            (h/merge-where [:not [:in :id kept-sub-attrs-ids]]))
+        query))))
+
+(defn save-sub-item-query [sub-items]
   (let [data (map #(-> %
                        (select-keys [:id :type :mapped-to :collection :array-attr-id])
                        (snake-case-keys)) sub-items)]
@@ -99,6 +113,18 @@
         (hp/upsert (-> (hp/on-conflict :id)
                        (hp/do-update-set :type :mapped_to :collection :array_attr_id)))
         (hp/returning :*))))
+
+(defn remove-sub-items-query
+  "query to remove all sub-items except the ones in `kept-sub-items-ids`"
+  [array-ids kept-sub-items-ids]
+  (when (seq array-ids)
+    (let [query (-> (h/delete-from :sub_items)
+                    (h/where [:in :array_attr_id array-ids]))]
+      (if (seq kept-sub-items-ids)
+        (-> query
+            (h/merge-where [:not [:in :id kept-sub-items-ids]]))
+        query))))
+
 ;; end queries
 
 (defn- save-single-attrs! [schema-id single-attrs & {:keys [extension?]}]
@@ -110,17 +136,17 @@
     (map #(-> % unqualify-keys (assoc :type :object)) updated-attrs)))
 
 (defn- save-array-attrs! [schema-id array-attrs & {:keys [extension?]}]
-  (def schema-id schema-id)
-  (def array-attrs array-attrs)
   (let [updated-attrs (exec! (save-array-query schema-id array-attrs :extension? extension?))]
     (map #(-> % unqualify-keys (assoc :type :array)) updated-attrs)))
 
-(defn- save-sub-attrs! [sub-attrs]
-  (let [updated-sub-attrs (exec! (save-sub-attr-query sub-attrs))]
+(defn save-sub-attrs! [sub-attrs object-ids]
+  (let [updated-sub-attrs (when (seq sub-attrs) (exec! (save-sub-attr-query sub-attrs)))]
+    (exec! (remove-sub-attrs-query object-ids (map :id sub-attrs)))
     (map unqualify-keys updated-sub-attrs)))
 
-(defn- save-sub-items! [sub-items]
-  (let [updated-sub-items (exec! (save-sub-item-query sub-items))]
+(defn- save-sub-items! [sub-items array-ids]
+  (let [updated-sub-items (when (seq sub-items) (exec! (save-sub-item-query sub-items)))]
+    (exec! (remove-sub-items-query array-ids (map :id sub-items)))
     (map unqualify-keys updated-sub-items)))
 
 (defn- objs+sub-attrs [objs sub-attrs]
@@ -143,10 +169,10 @@
      (save-single-attrs! schema-id singles :extension? extension?)
      (objs+sub-attrs
       (save-object-attrs! schema-id objects :extension? extension?)
-      (save-sub-attrs! sub-attrs))
+      (save-sub-attrs! sub-attrs (map :id objects)))
      (arrs+sub-items
       (save-array-attrs! schema-id arrays :extension? extension?)
-      (save-sub-items! sub-items)))))
+      (save-sub-items! sub-items (map :id arrays))))))
 
 (defn upsert-extensions! [schema-id exts]
   (let [updated-exts  (->> (save-extensions-query schema-id exts)
@@ -327,7 +353,6 @@
                              :collection "user"}]}]}]})
 
   (tap>
-   (upsert-schema! data)
-   ))
+   (upsert-schema! data)))
 
 
