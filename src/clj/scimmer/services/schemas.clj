@@ -8,10 +8,7 @@
             [camel-snake-kebab.extras :as cske]
             [scimmer.db.core :refer [*db*]]))
 
-
 ;; helpers
-
-
 (defn- exec! [query]
   (if-let [db *db*]
     (jdbc/execute! db (sql/format query))
@@ -43,6 +40,17 @@
                        (hp/do-update-set :name)))
         (hp/returning :*))))
 
+(defn remove-extensions-query
+  "query to remove extensions (with their children) except the ones in `kept-extensions-ids`"
+  [schema-id kept-extensions-ids]
+  (when schema-id
+    (let [query (-> (h/delete-from :extensions)
+                    (h/where [:in :schema_id [schema-id]]))]
+      (if (seq kept-extensions-ids)
+        (-> query
+            (h/merge-where [:not [:in :id kept-extensions-ids]]))
+        query))))
+
 (defn- save-single-query [container-id single-attrs & {:keys [extension?]}]
   (let [container-k (if extension? :extension_id :schema_id)
         data        (map (fn [sa]
@@ -57,6 +65,18 @@
                        (hp/do-update-set :name :mapped_to :collection container-k)))
         (hp/returning :*))))
 
+(defn remove-single-query
+  "query to remove singles except the ones in `kept-singles-ids`"
+  [container-id kept-singles-ids & {:keys [extension?]}]
+  (let [container-k (if extension? :extension_id :schema_id)]
+    (when container-id
+      (let [query (-> (h/delete-from :single_attrs)
+                      (h/where [:in container-k [container-id]]))]
+        (if (seq kept-singles-ids)
+          (-> query
+              (h/merge-where [:not [:in :id kept-singles-ids]]))
+          query)))))
+
 (defn- save-object-query [container-id object-attrs & {:keys [extension?]}]
   (let [container-k (if extension? :extension_id :schema_id)
         data        (map (fn [oa]
@@ -70,6 +90,18 @@
                        (hp/do-update-set :name container-k)))
         (hp/returning :*))))
 
+(defn remove-object-query
+  "query to remove objects (with their sub-attrs) except the ones in `kept-objects-ids`"
+  [container-id kept-objects-ids & {:keys [extension?]}]
+  (let [container-k (if extension? :extension_id :schema_id)]
+    (when container-id
+      (let [query (-> (h/delete-from :object_attrs)
+                      (h/where [:in container-k [container-id]]))]
+        (if (seq kept-objects-ids)
+          (-> query
+              (h/merge-where [:not [:in :id kept-objects-ids]]))
+          query)))))
+
 (defn- save-array-query [container-id array-attrs & {:keys [extension?]}]
   (let [container-k (if extension? :extension_id :schema_id)
         data        (map (fn [aa]
@@ -82,6 +114,18 @@
         (hp/upsert (-> (hp/on-conflict :id)
                        (hp/do-update-set :name container-k)))
         (hp/returning :*))))
+
+(defn remove-array-query
+  "query to remove arrays (with their sub-items) except the ones in `kept-arrays-ids`"
+  [container-id kept-arrays-ids & {:keys [extension?]}]
+  (let [container-k (if extension? :extension_id :schema_id)]
+    (when container-id
+      (let [query (-> (h/delete-from :array_attrs)
+                      (h/where [:in container-k [container-id]]))]
+        (if (seq kept-arrays-ids)
+          (-> query
+              (h/merge-where [:not [:in :id kept-arrays-ids]]))
+          query)))))
 
 (defn save-sub-attr-query [sub-attrs]
   (let [data (map #(-> %
@@ -128,25 +172,31 @@
 ;; end queries
 
 (defn- save-single-attrs! [schema-id single-attrs & {:keys [extension?]}]
-  (let [updated-attrs (exec! (save-single-query schema-id single-attrs :extension? extension?))]
+  (let [updated-attrs (when (seq single-attrs)
+                        (exec! (save-single-query schema-id single-attrs :extension? extension?)))]
+    (some-> (remove-single-query schema-id (map :id single-attrs) :extension? extension?) exec!)
     (map #(-> % unqualify-keys (assoc :type :single)) updated-attrs)))
 
 (defn- save-object-attrs! [schema-id object-attrs & {:keys [extension?]}]
-  (let [updated-attrs (exec! (save-object-query schema-id object-attrs :extension? extension?))]
+  (let [updated-attrs (when (seq object-attrs)
+                        (exec! (save-object-query schema-id object-attrs :extension? extension?)))]
+    (some-> (remove-object-query schema-id (map :id object-attrs) :extension? extension?) exec!)
     (map #(-> % unqualify-keys (assoc :type :object)) updated-attrs)))
 
 (defn- save-array-attrs! [schema-id array-attrs & {:keys [extension?]}]
-  (let [updated-attrs (exec! (save-array-query schema-id array-attrs :extension? extension?))]
+  (let [updated-attrs (when (seq array-attrs)
+                        (exec! (save-array-query schema-id array-attrs :extension? extension?)))]
+    (some-> (remove-array-query schema-id (map :id array-attrs) :extension? extension?) exec!)
     (map #(-> % unqualify-keys (assoc :type :array)) updated-attrs)))
 
 (defn save-sub-attrs! [sub-attrs object-ids]
   (let [updated-sub-attrs (when (seq sub-attrs) (exec! (save-sub-attr-query sub-attrs)))]
-    (exec! (remove-sub-attrs-query object-ids (map :id sub-attrs)))
+    (some-> (remove-sub-attrs-query object-ids (map :id sub-attrs)) exec!)
     (map unqualify-keys updated-sub-attrs)))
 
 (defn- save-sub-items! [sub-items array-ids]
   (let [updated-sub-items (when (seq sub-items) (exec! (save-sub-item-query sub-items)))]
-    (exec! (remove-sub-items-query array-ids (map :id sub-items)))
+    (some-> (remove-sub-items-query array-ids (map :id sub-items)) exec!)
     (map unqualify-keys updated-sub-items)))
 
 (defn- objs+sub-attrs [objs sub-attrs]
@@ -171,16 +221,19 @@
       (save-object-attrs! schema-id objects :extension? extension?)
       (save-sub-attrs! sub-attrs (map :id objects)))
      (arrs+sub-items
-      (save-array-attrs! schema-id arrays :extension? extension?)
+      (save-array-attrs! schema-id arrays  :extension? extension?)
       (save-sub-items! sub-items (map :id arrays))))))
 
 (defn upsert-extensions! [schema-id exts]
-  (let [updated-exts  (->> (save-extensions-query schema-id exts)
-                           exec!
-                           (map unqualify-keys))
-        updated-attrs (flatten (map #(upsert-attrs! (:id %) (:attrs %) :extension? true) exts))
-        grouped-attrs (group-by :extension-id updated-attrs)]
-    (map #(assoc % :attrs (get grouped-attrs (:id %))) updated-exts)))
+  (if (seq exts)
+    (let [updated-exts  (->> (save-extensions-query schema-id exts)
+                             exec!
+                             (map unqualify-keys))
+          updated-attrs (flatten (map #(upsert-attrs! (:id %) (:attrs %) :extension? true) exts))
+          grouped-attrs (group-by :extension-id updated-attrs)]
+      (some-> (remove-extensions-query schema-id (map :id exts)) exec!)
+      (map #(assoc % :attrs (get grouped-attrs (:id %))) updated-exts))
+    (some-> (remove-extensions-query schema-id (map :id exts)) exec!)))
 
 (defn upsert-schema! [schema]
   (let [updated-schema (-> (save-schema-query schema)

@@ -5,6 +5,6 @@ CREATE TABLE array_attrs (
   extension_id uuid,
 
   PRIMARY KEY (id),
-  CONSTRAINT fk_schema FOREIGN KEY (schema_id) REFERENCES schemas (id),
-  CONSTRAINT fk_extension FOREIGN KEY (extension_id) REFERENCES extensions (id)
+  CONSTRAINT fk_schema FOREIGN KEY (schema_id) REFERENCES schemas (id) ON DELETE CASCADE,
+  CONSTRAINT fk_extension FOREIGN KEY (extension_id) REFERENCES extensions (id) ON DELETE CASCADE
 );

@@ -6,6 +6,6 @@ CREATE TABLE sub_items (
   array_attr_id uuid NOT NULL,
 
   PRIMARY KEY (id),
-  CONSTRAINT fk_array_attr FOREIGN KEY (array_attr_id) REFERENCES array_attrs (id)
+  CONSTRAINT fk_array_attr FOREIGN KEY (array_attr_id) REFERENCES array_attrs (id) ON DELETE CASCADE
 );
 

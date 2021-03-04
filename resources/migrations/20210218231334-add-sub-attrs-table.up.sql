@@ -6,6 +6,6 @@ CREATE TABLE sub_attrs (
   object_attr_id uuid NOT NULL,
 
   PRIMARY KEY (id),
-  CONSTRAINT fk_object_attr FOREIGN KEY (object_attr_id) REFERENCES object_attrs (id)
+  CONSTRAINT fk_object_attr FOREIGN KEY (object_attr_id) REFERENCES object_attrs (id) ON DELETE CASCADE
 );
 
