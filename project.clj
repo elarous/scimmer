@@ -12,6 +12,7 @@
                  [cljs-ajax "0.8.1"]
                  [clojure.java-time "0.3.2"]
                  [com.cognitect/transit-clj "1.0.324"]
+                 [com.cognitect/transit-cljs "0.8.264"]
                  [com.fasterxml.jackson.core/jackson-core "2.11.3"]
                  [com.fasterxml.jackson.core/jackson-databind "2.11.3"]
                  [com.google.javascript/closure-compiler-unshaded "v20200504" :scope "provided"]
@@ -50,10 +51,12 @@
                  [selmer "1.12.31"]
                  [thheller/shadow-cljs "2.11.5" :scope "provided"]
                  [honeysql "1.0.444"]
+                 [nilenso/honeysql-postgres "0.2.6"]
                  [org.clojars.rkaippully/scim-patch "1.0.0"]
                  [clj-commons/cljss "1.6.4"]
                  [herb "0.10.0"]
-                 [clj-http "3.11.0"]]
+                 [clj-http "3.11.0"]
+                 [camel-snake-kebab "0.4.2"]]
 
   :min-lein-version "2.0.0"
   
@@ -63,9 +66,9 @@
   :target-path "target/%s/"
   :main ^:skip-aot scimmer.core
 
-  :plugins [[lein-shadow "0.2.0"]] 
-  :clean-targets ^{:protect false}
-  [:target-path "target/cljsbuild"]
+  :plugins [[lein-shadow "0.2.0"]]
+
+  :clean-targets ^{:protect false} [:target-path "target/cljsbuild"]
   :shadow-cljs
   {:nrepl {:port 7002}
    :builds
@@ -83,7 +86,7 @@
     {:target :node-test
      :output-to "target/test/test.js"
      :autorun true}}}
-  
+
   :npm-deps []
   :npm-dev-deps [[xmlhttprequest "1.8.0"]]
 

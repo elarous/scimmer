@@ -5,13 +5,13 @@
 (rf/reg-sub
   :mapping/extensions
   (fn [db _]
-    (->> (get db :extensions)
+    (->> (get-in db [:schema :extensions])
          (map assoc-id))))
 
 (rf/reg-sub
   :mapping/attrs
   (fn [db [_ id type]]
-    (->> (get-in db [:extensions id])
+    (->> (get-in db [:schema :extensions id]) 
          :attrs
          (map assoc-id)
          (filter #(= type (:type %))))))

@@ -1,50 +1,70 @@
 (ns scimmer.mapping.schema-card.events
   (:require
-    [re-frame.core :as rf]
-    [ajax.core :as ajax]
-    [reitit.frontend.easy :as rfe]
-    [reitit.frontend.controllers :as rfc]
-    [scimmer.app-db :as app-db]
-    [scimmer.services.mapping :refer [build-resource]]))
+   [re-frame.core :as rf]
+   [ajax.core :as ajax]
+   [reitit.frontend.easy :as rfe]
+   [reitit.frontend.controllers :as rfc]
+   [scimmer.app-db :as app-db]
+   [scimmer.services.mapping :refer [build-resource]]))
 
-;; Interceptors
-(defn attr-interceptor [filtering-fn]
-  (rf/->interceptor
-    :id :attr-interceptor
-    :before (fn [context]
-              (let [original-db (rf/get-coeffect context :db)
-                    single-attrs
-                    (-> original-db
-                        (get-in [:mapping :children])
-                        (as-> all-attrs
-                              (filterv (complement filtering-fn) all-attrs)))]
-                (-> context
-                    (assoc :temp-db original-db)
-                    (rf/assoc-coeffect :db single-attrs))))
-    :after (fn [context]
-             (let [original-db (:temp-db context)
-                   db-without-old-attrs (update-in original-db [:mapping :children]
-                                                   #(filterv filtering-fn %))
-                   new-attrs-vec (rf/get-effect context :db ::not-found)
-                   new-db (update-in db-without-old-attrs [:mapping :children] concat new-attrs-vec)]
-               (rf/assoc-effect context :db new-db)))))
+(defn unindex [m]
+  (->> (vals m)
+       (map (fn [attr]
+              (cond
+                (map? (:sub-attrs attr))
+                (update attr :sub-attrs vals)
+                (map? (:sub-items attr))
+                (update attr :sub-items vals)
+                :else attr)))))
 
-;; Helper functions
-(defn get-attr-idx [attrs name]
-  (->> attrs
-       (map-indexed (fn [idx itm] [idx itm]))
-       (some (fn [[idx [attr-name _props _schema]]] (and (= name attr-name) idx)))))
+(defn unindex-schema [db]
+  (-> db
+      (update-in [:schema :attrs] unindex)
+      (update-in [:schema :extensions] unindex)
+      (update-in [:schema :extensions] (fn [exts]
+                                         (map #(update % :attrs unindex) exts)))))
 
-;; Events
+; Events
 (rf/reg-event-db
-  :mapping/>set-attr
-  [(rf/path :schema)]
-  (fn [schema [_ id name]]
-    (assoc-in schema [id :name] name)))
+ :mapping/>set-attr
+ [(rf/path :schema)]
+ (fn [schema [_ id name]]
+   (assoc-in schema [:attrs id :name] name)))
 
 (rf/reg-event-db
-  :mapping/>remove-attr
-  [(rf/path :schema)]
-  (fn [schema [_ id]]
-    (dissoc schema id)))
+ :mapping/>remove-attr
+ [(rf/path :schema)]
+ (fn [schema [_ id]]
+   (update schema :attrs dissoc id)))
+
+(rf/reg-event-fx
+ :mapping/>save
+ (fn [{db :db} _]
+   (let [new-schema
+         (-> (:schema db)
+             (update :attrs unindex)
+             (update :extensions unindex)
+             (update :extensions (fn [exts] (map #(update % :attrs unindex) exts))))]
+     {:http-xhrio {:method          :post
+                   :uri             (str "http://localhost:3003/api/schemas/" (:id new-schema))
+                   :timeout         8000
+                   :format          (ajax/transit-request-format)
+                   :response-format (ajax/transit-response-format)
+                   :on-success      [:mapping/>confirm-save]
+                   :on-failure      [:mapping/>reject-save]
+                   :params          new-schema}})))
+
+(rf/reg-event-db
+ :mapping/>confirm-save
+ (fn [db _]
+   (js/console.log "Saving schema succeeded!")
+   db))
+
+(rf/reg-event-db
+ :mapping/>reject-save
+ (fn [db _]
+   (js/console.error "Saving schema failed!")
+   db))
+
+
 

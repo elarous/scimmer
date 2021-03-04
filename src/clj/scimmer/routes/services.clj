@@ -12,6 +12,7 @@
     [clojure.tools.logging :as log]
     [clojure.java.io :as io]
     [scimmer.services.users :as users]
+    [scimmer.services.schemas :as schemas]
     [reitit.core :as r]))
 
 (defn ping-handler [request]
@@ -49,13 +50,20 @@
 
     ["/api-docs/*"
      {:get (swagger-ui/create-swagger-ui-handler
-             {:url    "/api/swagger.json"
-              :config {:validator-url nil}})}]]
+            {:url    "/api/swagger.json"
+             :config {:validator-url nil}})}]]
+
+   [["/schemas" {:get (fn [req]
+                        (ok (schemas/get-all req)))}]
+    ["/schemas/:id" {:get  (fn [req]
+                             (ok (schemas/get-schema req)))
+                     :post (fn [req]
+                             (ok (schemas/save-schema req)))}]]
 
    ["/scim"
     ["/v2"
-     ["/users/:id" {:get   users/get-user
-                    :patch users/update-user
+     ["/users/:id" {:get    users/get-user
+                    :patch  users/update-user
                     :delete users/delete-user}]
      ["/users" {:get  users/get-users
                 :post users/create-user}]]]

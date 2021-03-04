@@ -8,15 +8,15 @@
             [scimmer.mapping.schema-card.array-attr.styles :as stl]
             [scimmer.mapping.schema-card.array-attr.events]))
 
-(defn array-attr-item [{:keys [group mapped-to type on-remove on-type-change on-group-change on-mapped-to-change]}]
+(defn array-attr-item [{:keys [collection mapped-to type on-remove on-type-change on-collection-change on-mapped-to-change]}]
   [:div {:class (<class stl/array-attr-inputs)}
-   [input {:name        "group"
-           :placeholder "Group"
-           :value       group
-           :on-change   on-group-change}]
+   [input {:name        "collection"
+           :placeholder "Collection"
+           :value       collection
+           :on-change   on-collection-change}]
    [input {:name        "type"
            :placeholder "Type"
-           :value       (name type)
+           :value       (some-> type name)
            :on-change   on-type-change}]
    [input {:name        "mappedTo"
            :placeholder "Mapped To"

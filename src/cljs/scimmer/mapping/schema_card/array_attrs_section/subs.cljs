@@ -5,7 +5,7 @@
   :mapping/array-attrs
   (fn [db _]
     (let [assoc-id (fn [[k v]] (assoc v :id k))]
-      (->> (get db :schema)
+      (->> (get-in db [:schema :attrs])
            (map assoc-id)
            (filter #(= :array (:type %)))
            (map #(update % :sub-items (partial map assoc-id)))))))
