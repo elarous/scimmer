@@ -13,6 +13,7 @@
     [clojure.java.io :as io]
     [scimmer.services.users :as users]
     [scimmer.services.schemas :as schemas]
+    [scimmer.services.transform :as transform]
     [reitit.core :as r]))
 
 (defn ping-handler [request]
@@ -52,6 +53,7 @@
      {:get (swagger-ui/create-swagger-ui-handler
             {:url    "/api/swagger.json"
              :config {:validator-url nil}})}]]
+   [["/resource_to_entities" {:post transform/resource->entities}]]
 
    [["/schemas" {:get (fn [req]
                         (ok (schemas/get-all req)))}]
