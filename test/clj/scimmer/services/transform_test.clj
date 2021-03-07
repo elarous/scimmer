@@ -10,7 +10,8 @@
    [luminus-migrations.core :as migrations]
    [next.jdbc :as jdbc]
    [muuntaja.core :as m]
-   [mount.core :as mount]))
+   [mount.core :as mount])
+  (:import java.util.UUID))
 
 (use-fixtures
   :once
@@ -21,7 +22,7 @@
     (mount/stop #'env #'*db* #'app-routes)))
 
 (def schema
-  {:id         #uuid "0ea136ad-061d-45f1-8d92-0056272256f9"
+  {:id         #uuid "0ea136ad-061d-45f1-8d92-005627a156f9"
    :resource   "user"
    :name       "first_schema"
    :is-default false
@@ -109,6 +110,34 @@
     :manager        {:value       "0F2342SLDJF23"
                      :displayName "Jamil the boss"}}})
 
+(def entities
+  {:user
+   {:manager_id "0F2342SLDJF23",
+    :uuid "0ea136ad-061d-45f1-8d92-db5627a156f2",
+    :user_name "karim",
+    :mobile_phone "000000"},
+   :profile
+   {:first_name "Oussama",
+    :organization "Google. Inc",
+    :last_name "El Arbaoui"}})
+
+(def patch-req
+  {:Operations [{:op    "Replace",
+                 :path  "name.familyName",
+                 :value "Mikhia"},
+                {:op    "Replace",
+                 :path  "name.givenName",
+                 :value "Sakura"},
+                {:op    "Replace",
+                 :path  "phoneNumbers[type eq \"mobile\"].value",
+                 :value "+5959595959"},
+                {:op    "Replace",
+                 :path  "userName",
+                 :value "user001"},
+                {:op    "Replace",
+                 :path  "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:organization",
+                 :value "Facebook"}]})
+
 (deftest resource-to-entities
   (jdbc/with-transaction [t-conn *db* {:rollback-only true}]
     (schs/upsert-schema! schema)
@@ -116,16 +145,16 @@
       (let [req-body     {:schema-id (:id schema)
                           :resource  resource}
             response     ((app) (-> (req/request :post "/api/resource_to_entities")
-                                (req/json-body req-body)))
+                                    (req/json-body req-body)))
             decoded-resp (m/decode-response-body response)]
         (testing "Response shape"
           (is (= 200 (:status response)))
           (is (= #{:meta :entities} (set (keys decoded-resp))))
           (is (= #{:user :profile} (-> decoded-resp :entities keys set))))
         (testing "Meta data"
-          (is (:id schema) (get-in decoded-resp [:meta :schema-id])))
+          (is (= (:id schema) (UUID/fromString (get-in decoded-resp [:meta :schema-id])))))
         (testing "Single attributes"
-          (is (:id resource) (get-in decoded-resp [:entities :user :uuid])))
+          (is (= (:id resource) (get-in decoded-resp [:entities :user :uuid]))))
         (testing "Object attributes"
           (is (and (= (get-in resource [:name :familyName])
                       (get-in decoded-resp [:entities :profile :last_name]))
@@ -134,6 +163,51 @@
         (testing "Array attributes"
           (is (-> resource :phoneNumbers first) (get-in decoded-resp [:entities :user :mobile_phone])))
         (testing "Extension attributes"
-          (is (get-in resource [:urn:ietf:params:scim:schemas:extension:enterprise:2.0:User :organization])
+          (is (= (get-in resource [:urn:ietf:params:scim:schemas:extension:enterprise:2.0:User :organization])
+                 (get-in decoded-resp [:entities :profile :organization]))))))
+
+    (testing "Resource to entities for SCIM PATCH"
+      (let [{:keys [family-name given-name mobile-number user-name organization]}
+            {:family-name "Johns" :given-name "Kamaro" :mobile-number "+10101010" :user-name "user001" :organization "Facebook"}
+            patch-req {:Operations [{:op    "replace",
+                                     :path  "name.familyName",
+                                     :value family-name},
+                                    {:op    "replace",
+                                     :path  "name.givenName",
+                                     :value given-name},
+                                    {:op    "replace",
+                                     :path  "phoneNumbers[type eq \"mobile\"].value",
+                                     :value mobile-number},
+                                    {:op    "replace",
+                                     :path  "userName",
+                                     :value user-name},
+                                    {:op    "replace",
+                                     :path  "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:organization",
+                                     :value organization}]}
+
+            req-body     {:schema-id (:id schema)
+                          :patch-req patch-req
+                          :entities  entities}
+            response     ((app) (-> (req/request :post "/api/resource_to_entities")
+                                    (req/json-body req-body)))
+            decoded-resp (m/decode-response-body response)]
+        (testing "Response shape"
+          (is (= 200 (:status response)))
+          (is (= #{:meta :entities} (set (keys decoded-resp))))
+          (is (= #{:user :profile} (-> decoded-resp :entities keys set))))
+        (testing "Meta data"
+          (is (:id schema) (get-in decoded-resp [:meta :schema-id])))
+        (testing "Single attributes"
+          (is (= (get-in entities [:user :uuid]) (get-in decoded-resp [:entities :user :uuid])))
+          (is (= user-name (get-in decoded-resp [:entities :user :user_name]))))
+        (testing "Object attributes"
+          (is (and (= family-name
+                      (get-in decoded-resp [:entities :profile :last_name]))
+                   (= given-name
+                      (get-in decoded-resp [:entities :profile :first_name])))))
+        (testing "Array attributes"
+          (is mobile-number (get-in decoded-resp [:entities :user :mobile_phone])))
+        (testing "Extension attributes"
+          (is organization
               (get-in decoded-resp [:entities :profile :organization])))))))
 

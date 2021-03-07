@@ -23,7 +23,6 @@
                                  [:value {::sch/mapping :user/email_personal} string?]]]]]]]
 
           patch-schema (sut/schema->scim-patch-schema (mu/to-map-syntax schema))]
-      (def p patch-schema)
       (is (= {:attributes
               {:id {:type :string},
                :name
