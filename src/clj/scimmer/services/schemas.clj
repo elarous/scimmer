@@ -335,6 +335,7 @@
 
 (defn save-schema [request]
   (let [schema  (:body-params request)]
+    (tap> schema)
     (upsert-schema! schema)))
 
 ;;

@@ -28,7 +28,6 @@
                     [:familyName {::sch/mapping :user/last_name} string?]
                     [:givenName {::sch/mapping :user/name} string?]]]]
           resource (sut/build-resource (mu/to-map-syntax schema) entity)]
-      (def r resource)
       (is (= (get-in resource [:name :formatted]) (:formatted vls)))
       (is (= (get-in resource [:name :familyName]) (:family-name vls)))
       (is (= (get-in resource [:name :givenName]) (:given-name vls)))))
