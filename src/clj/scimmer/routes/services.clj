@@ -53,7 +53,8 @@
      {:get (swagger-ui/create-swagger-ui-handler
             {:url    "/api/swagger.json"
              :config {:validator-url nil}})}]]
-   [["/resource_to_entities" {:post transform/resource->entities}]]
+   [["/resource_to_entities" {:post transform/resource->entities}]
+    ["/entities_to_resource" {:post transform/entities->resource}]]
 
    [["/schemas" {:get (fn [req]
                         (ok (schemas/get-all req)))}]

@@ -209,5 +209,30 @@
           (is mobile-number (get-in decoded-resp [:entities :user :mobile_phone])))
         (testing "Extension attributes"
           (is organization
-              (get-in decoded-resp [:entities :profile :organization])))))))
+              (get-in decoded-resp [:entities :profile :organization])))))
+    (testing "Entities to resource for SCIM GET (one)"
+      (let [req-body     {:schema-id (:id schema)
+                          :entities  entities}
+            response     ((app) (-> (req/request :post "/api/entities_to_resource")
+                                    (req/json-body req-body)))
+            decoded-resp (m/decode-response-body response)]
+        (testing "Response shape"
+          (is (= 200 (:status response)))
+          (is (= #{:meta :resource} (set (keys decoded-resp)))))
+        (testing "Meta data"
+          (is (:id schema) (get-in decoded-resp [:meta :schema-id])))
+        (testing "Single attributes"
+          (is (= (get-in entities [:user :uuid]) (get-in decoded-resp [:resource :id])))
+          (is (= (get-in entities [:user :user_name]) (get-in decoded-resp [:resource :userName]))))
+        (testing "Object attributes"
+          (is (and (= (get-in entities [:profile :last_name])
+                      (get-in decoded-resp [:resource :name :familyName]))
+                   (= (get-in entities [:profile :first_name])
+                      (get-in decoded-resp [:resource :name :givenName])))))
+        (testing "Array attributes"
+          (is (= (get-in entities [:user :mobile_phone])
+                 (get-in decoded-resp [:resource :phoneNumbers 0 :value]))))
+        (testing "Extension attributes"
+          (is (= (get-in entities [:profile :organization])
+                 (get-in decoded-resp [:resource :urn:ietf:params:scim:schemas:extension:enterprise:2.0:User  :organization]))))))))
 

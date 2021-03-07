@@ -12,6 +12,10 @@
   {:meta {:schema-id schema-id}
    :entities entities})
 
+(defn- wrap-entities->resource [resource schema-id]
+  {:meta {:schema-id schema-id}
+   :resource resource})
+
 (defn- resource->entities-put [req]
   (let [{:keys [schema-id resource]} (:body-params req)
         schema (schemas/find-schema! (UUID/fromString schema-id))
@@ -27,7 +31,7 @@
         malli-schema (map-utils/combine-malli-schema schema)
         patch-schema (sp/schema->scim-patch-schema malli-schema)
         resource (rs/build-resource malli-schema entities)
-        patched-resource (patch/patch  patch-schema resource (:Operations patch-req))
+        patched-resource (patch/patch patch-schema resource (:Operations patch-req))
         patched-entities (mapping/build-resource malli-schema patched-resource [] {} {})]
     (-> patched-entities
         (wrap-resource->entities schema-id)
@@ -38,4 +42,13 @@
     (if (contains? params :patch-req)
       (resource->entities-patch req)
       (resource->entities-put req))))
+
+(defn entities->resource [req]
+  (let [{:keys [schema-id entities]} (:body-params req)
+        schema (schemas/find-schema! (UUID/fromString schema-id))
+        malli-schema (map-utils/combine-malli-schema schema)
+        resource (rs/build-resource malli-schema entities)]
+    (-> resource
+        (wrap-entities->resource schema-id)
+        (resp/ok))))
 
