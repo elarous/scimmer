@@ -234,5 +234,32 @@
                  (get-in decoded-resp [:resource :phoneNumbers 0 :value]))))
         (testing "Extension attributes"
           (is (= (get-in entities [:profile :organization])
-                 (get-in decoded-resp [:resource :urn:ietf:params:scim:schemas:extension:enterprise:2.0:User  :organization]))))))))
+                 (get-in decoded-resp [:resource :urn:ietf:params:scim:schemas:extension:enterprise:2.0:User  :organization]))))))
+    (testing "Entities to resource for SCIM GET (many)"
+      (let [req-body     {:schema-id (:id schema)
+                          :entities-list  [entities]}
+            response     ((app) (-> (req/request :post "/api/entities_to_resource")
+                                    (req/json-body req-body)))
+            decoded-resp (m/decode-response-body response)]
+        (testing "Response shape"
+          (is (= 200 (:status response)))
+          (is (= #{:meta :resources} (set (keys decoded-resp)))))
+        (testing "Meta data"
+          (is (:id schema) (get-in decoded-resp [:meta :schema-id])))
+        (testing "Single attributes"
+          (is (= (get-in entities [:user :uuid])
+                 (-> decoded-resp :resources first :id)))
+          (is (= (get-in entities [:user :user_name])
+                 (-> decoded-resp :resources first :userName))))
+        (testing "Object attributes"
+          (is (and (= (get-in entities [:profile :last_name])
+                      (-> decoded-resp :resources first :name :familyName))
+                   (= (get-in entities [:profile :first_name])
+                      (-> decoded-resp :resources first :name :givenName)))))
+        (testing "Array attributes"
+          (is (= (get-in entities [:user :mobile_phone])
+                 (-> decoded-resp :resources first :phoneNumbers first :value))))
+        (testing "Extension attributes"
+          (is (= (get-in entities [:profile :organization])
+                 (-> decoded-resp :resources first :urn:ietf:params:scim:schemas:extension:enterprise:2.0:User :organization))))))))
 
