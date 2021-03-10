@@ -16,6 +16,10 @@
   {:meta {:schema-id schema-id}
    :resource resource})
 
+(defn- wrap-entities->resources [resources schema-id]
+  {:meta {:schema-id schema-id}
+   :resources resources})
+
 (defn- resource->entities-put [req]
   (let [{:keys [schema-id resource]} (:body-params req)
         schema (schemas/find-schema! (UUID/fromString schema-id))
@@ -47,12 +51,12 @@
         (resp/ok))))
 
 (defn- entities->resource-many [req]
-  (let [{:keys [schema-id entities]} (:body-params req)
+  (let [{:keys [schema-id entities-list]} (:body-params req)
         schema (schemas/find-schema! (UUID/fromString schema-id))
         malli-schema (map-utils/combine-malli-schema schema)
-        resource (rs/build-resource malli-schema entities)]
-    (-> resource
-        (wrap-entities->resource schema-id)
+        resources (map (partial rs/build-resource malli-schema) entities-list)]
+    (-> resources
+        (wrap-entities->resources schema-id)
         (resp/ok))))
 
 (defn resource->entities [req]

@@ -1,6 +1,7 @@
 (ns scimmer.services.scim-patch
   "Functions to handle Malli schema to scim-patch transformations"
-  (:require [scimmer.services.schema :as sch]))
+  (:require [clojure.string :as s]
+            [scimmer.services.schema :as sch]))
 
 ;; helpers
 (defn- symbol->keyword [symbol]
@@ -56,5 +57,26 @@
 (defmethod schema->scim-patch-schema := [[name props contents]]
   {:attributes {name {:type :string}}})
 
+(defn lower-case-operations [ops]
+  (map (fn [op]
+         (update :op))
+       ops))
+
 (comment
-   (schema->scim-patch-schema sch/user-schema-map))
+  (schema->scim-patch-schema sch/user-schema-map)
+  (lower-case-operations
+   [{:op    "Replace",
+     :path  "name.familyName",
+     :value ""},
+    {:op    "replace",
+     :path  "name.givenName",
+     :value ""},
+    {:op    "replace",
+     :path  "phoneNumbers[type eq \"mobile\"].value",
+     :value ""},
+    {:op    "REPLACE",
+     :path  "userName",
+     :value ""},
+    {:op    "replace",
+     :path  "",
+     :value ""}]))
