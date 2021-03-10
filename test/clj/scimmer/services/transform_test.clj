@@ -121,23 +121,6 @@
     :organization "Google. Inc",
     :last_name "El Arbaoui"}})
 
-(def patch-req
-  {:Operations [{:op    "Replace",
-                 :path  "name.familyName",
-                 :value "Mikhia"},
-                {:op    "Replace",
-                 :path  "name.givenName",
-                 :value "Sakura"},
-                {:op    "Replace",
-                 :path  "phoneNumbers[type eq \"mobile\"].value",
-                 :value "+5959595959"},
-                {:op    "Replace",
-                 :path  "userName",
-                 :value "user001"},
-                {:op    "Replace",
-                 :path  "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:organization",
-                 :value "Facebook"}]})
-
 (deftest resource-to-entities
   (jdbc/with-transaction [t-conn *db* {:rollback-only true}]
     (schs/upsert-schema! schema)
@@ -169,7 +152,7 @@
     (testing "Resource to entities for SCIM PATCH"
       (let [{:keys [family-name given-name mobile-number user-name organization]}
             {:family-name "Johns" :given-name "Kamaro" :mobile-number "+10101010" :user-name "user001" :organization "Facebook"}
-            patch-req {:Operations [{:op    "replace",
+            patch-req {:Operations [{:op    "Replace",
                                      :path  "name.familyName",
                                      :value family-name},
                                     {:op    "replace",
@@ -178,7 +161,7 @@
                                     {:op    "replace",
                                      :path  "phoneNumbers[type eq \"mobile\"].value",
                                      :value mobile-number},
-                                    {:op    "replace",
+                                    {:op    "REPLACE",
                                      :path  "userName",
                                      :value user-name},
                                     {:op    "replace",
