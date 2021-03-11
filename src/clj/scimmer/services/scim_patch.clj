@@ -58,9 +58,7 @@
   {:attributes {name {:type :string}}})
 
 (defn lower-case-operations [ops]
-  (map (fn [op]
-         (update :op))
-       ops))
+  (map #(update % :op s/lower-case) ops))
 
 (comment
   (schema->scim-patch-schema sch/user-schema-map)

@@ -28,8 +28,9 @@
 
 (rf/reg-event-fx
  :mapping/>confirm-load-schemas
- (fn [_ [_ schemas]]
-   {:dispatch [:mapping/>load-schema! (->> schemas first :id)]}))
+ (fn [{db :db} [_ schemas]]
+   {:db (assoc db :schemas schemas)
+    :dispatch [:mapping/>load-schema! (->> schemas first :id)]}))
 
 (rf/reg-event-db
  :mapping/>reject-load-schemas

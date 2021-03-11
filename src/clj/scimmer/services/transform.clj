@@ -35,7 +35,8 @@
         malli-schema (map-utils/combine-malli-schema schema)
         patch-schema (sp/schema->scim-patch-schema malli-schema)
         resource (rs/build-resource malli-schema entities)
-        patched-resource (patch/patch patch-schema resource (:Operations patch-req))
+        patch-operations (sp/lower-case-operations (:Operations patch-req))
+        patched-resource (patch/patch patch-schema resource patch-operations)
         patched-entities (mapping/build-resource malli-schema patched-resource [] {} {})]
     (-> patched-entities
         (wrap-resource->entities schema-id)
