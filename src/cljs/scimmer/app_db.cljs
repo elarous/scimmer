@@ -3,7 +3,7 @@
             [malli.core :as m]))
 
 (def db
-  {:schema   {}
+  {:schema   nil
    :extensions {}
    :resource {:id           "0ea136ad-061d-45f1-8d92-db5627a156f2"
               :externalId   "8a61fbf4-543c-4ed2-94a4-74838d6ba8ef"

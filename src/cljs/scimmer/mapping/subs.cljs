@@ -16,14 +16,6 @@
                       (throw (js/Error. "Shouldn't fall here"))))))]
     (group-by :type ext-attrs)))
 
-;; Schema subscriptions
-
-
-(rf/reg-sub
- :mapping/schema
- (fn [db _]
-   (:schema db)))
-
 ;; Resource subscriptions
 (rf/reg-sub
  :mapping/resource
