@@ -11,7 +11,7 @@
  :mapping/>resource->entities
  (fn [db [_ _]]
    (try
-     (let [schema (:mapping db)
+     (let [schema   (:mapping db)
            resource (:resource db)]
        (assoc db :entities (build-resource (:attrs schema) resource [] {} {})))
      (catch js/Error e (js/console.log e)))))
@@ -29,7 +29,7 @@
 (rf/reg-event-fx
  :mapping/>confirm-load-schemas
  (fn [{db :db} [_ schemas]]
-   {:db (assoc db :schemas schemas)
+   {:db       (assoc db :schemas schemas)
     :dispatch [:mapping/>load-schema! (->> schemas first :id)]}))
 
 (rf/reg-event-db
@@ -37,6 +37,29 @@
  (fn [db [_ error]]
    (js/console.log error)
    db))
+
+(rf/reg-event-fx
+ :mapping/>refresh-schemas!
+ (fn [_ _]
+   {:http-xhrio {:method          :get
+                 :uri             "http://localhost:3003/api/schemas"
+                 :timeout         8000
+                 :response-format (ajax/transit-response-format)
+                 :on-success      [:mapping/>confirm-refresh-schemas]
+                 :on-failure      [:mapping/>reject-refresh-schemas]}}))
+
+
+(rf/reg-event-fx
+ :mapping/>confirm-refresh-schemas
+ (fn [{db :db} [_ schemas]]
+   {:db       (assoc db :schemas schemas)}))
+
+(rf/reg-event-db
+ :mapping/>reject-refresh-schemas
+ (fn [db [_ error]]
+   (js/console.log error)
+   db))
+
 
 (rf/reg-event-fx
  :mapping/>load-schema!
@@ -61,25 +84,25 @@
  (fn [db [_ resp]]
    (js/console.log resp)
    (let [index-by-uuid (partial index-by :id)
-         index-attrs (fn [attrs] (map #(cond
-                                         (some? (:sub-attrs %))
-                                         (update % :sub-attrs index-by-uuid)
-                                         (some? (:sub-items %))
-                                         (update % :sub-items index-by-uuid)
-                                         :else %) attrs))
-         _ (def resp resp)
+         index-attrs   (fn [attrs] (map #(cond
+                                           (some? (:sub-attrs %))
+                                           (update % :sub-attrs index-by-uuid)
+                                           (some? (:sub-items %))
+                                           (update % :sub-items index-by-uuid)
+                                           :else %) attrs))
+         _             (def resp resp)
          extensions    (->> (:extensions resp)
                             (map (fn [ext]
                                    (update ext
-                                          :attrs
-                                          (comp index-by-uuid index-attrs))))
+                                           :attrs
+                                           (comp index-by-uuid index-attrs))))
                             index-by-uuid)
 
          attrs (->> (:attrs resp)
                     index-attrs
                     index-by-uuid)
 
-         schema        (-> resp
+         schema (-> resp
                            (assoc :attrs attrs)
                            (assoc :extensions extensions))]
      (js/console.log schema)

@@ -1,11 +1,7 @@
 (ns scimmer.mapping.schema-card.events
   (:require
    [re-frame.core :as rf]
-   [ajax.core :as ajax]
-   [reitit.frontend.easy :as rfe]
-   [reitit.frontend.controllers :as rfc]
-   [scimmer.app-db :as app-db]
-   [scimmer.services.mapping :refer [build-resource]]))
+   [ajax.core :as ajax]))
 
 (defn unindex [m]
   (->> (vals m)
@@ -54,17 +50,16 @@
                    :on-failure      [:mapping/>reject-save]
                    :params          new-schema}})))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  :mapping/>confirm-save
- (fn [db _]
+ (fn [{db :db} _]
    (js/console.log "Saving schema succeeded!")
-   db))
+   {:db       (assoc db :schema-saved? true)
+    :dispatch [:mapping/>refresh-schemas!]}))
 
 (rf/reg-event-db
  :mapping/>reject-save
  (fn [db _]
    (js/console.error "Saving schema failed!")
    db))
-
-
 
