@@ -4,7 +4,7 @@
             [re-frame.core :as rf]
             [herb.core :refer [<class]]
             ["grommet" :refer [Anchor Select TextInput Button Link]]
-            ["grommet-icons" :refer [Add]]
+            ["grommet-icons" :refer [Add Trash]]
             [scimmer.theme :refer [colors]]
             [scimmer.mapping.card.views :as cv]
             [scimmer.mapping.schema-card.header.styles :as stl]
@@ -38,8 +38,14 @@
       (when schema-saved?
         [:> Anchor {:on-click #(rf/dispatch [:mapping/>new-schema])
                     :margin   "xsmall"
-                    :color    (:secondary colors)
+                    :color    (:primary colors)
                     :size     "small"
                     :icon     (r/create-element Add #js {:size "small"})
-                    :label    "New"}])]]))
+                    :label    "New"}])
+      [:> Anchor {:on-click #(rf/dispatch [:mapping/>remove (:id schema)])
+                  :margin   "xsmall"
+                  :color    (:secondary colors)
+                  :size     "small"
+                  :icon     (r/create-element Trash #js {:size "small"})
+                  :label    "Remove"}]]]))
 

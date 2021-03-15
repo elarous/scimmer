@@ -63,3 +63,29 @@
    (js/console.error "Saving schema failed!")
    db))
 
+(rf/reg-event-fx
+ :mapping/>remove
+ (fn [{db :db} _]
+   (let [id (get-in db [:schema :id])]
+     {:http-xhrio {:method          :delete
+                   :uri             (str "http://localhost:3003/api/schemas/" id)
+                   :timeout         8000
+                   :format          (ajax/transit-request-format)
+                   :response-format (ajax/transit-response-format)
+                   :on-success      [:mapping/>confirm-remove]
+                   :on-failure      [:mapping/>reject-remove]}})))
+
+(rf/reg-event-fx
+ :mapping/>confirm-remove
+ (fn [{db :db} _]
+   (js/console.log "Removed")
+   {:db db
+    :dispatch [:mapping/>load-schemas!]}))
+
+
+(rf/reg-event-fx
+ :mapping/>reject-remove
+ (fn [{db :db} _]
+   (js/console.log "Not Removed")
+   {:db db}))
+
