@@ -15,11 +15,18 @@
             [scimmer.mapping.schema-card.events]
             [scimmer.mapping.schema-card.subs]))
 
+(defn schema-id []
+  (let [schema @(rf/subscribe [:mapping/schema])]
+    [:div {:class (<class stl/schema-id)}
+     [:div {:class (<class stl/schema-id-lbl)} "ID"]
+     [:div {:class (<class stl/schema-id-val)} (.toString (:id schema))]]))
+
 (defn schema-card []
   (let [set-attr    #(rf/dispatch [:mapping/>set-attr %1 %2])
         remove-attr #(rf/dispatch [:mapping/>remove-attr %1])]
     [card {:class (<class stl/schema-card)}
      [header]
+     [schema-id]
      [top-actions]
      [:div {:class (<class stl/body)}
       [singles-section {:set-attr set-attr :remove-attr remove-attr}]
