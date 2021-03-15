@@ -1,43 +1,32 @@
 (ns scimmer.mapping.schema-card.views
-  (:require ["react" :as re]
-            [reagent.core :as r]
-            [re-frame.core :as rf]
+  (:require [re-frame.core :as rf]
             [herb.core :refer [<class]]
-            ["grommet" :refer [Select Field Layer]]
             [scimmer.mapping.subs]
             [scimmer.mapping.events]
             [scimmer.mapping.schema-card.styles :as stl]
-            [scimmer.mapping.card.views :refer [card header]]
+            [scimmer.mapping.card.views :refer [card]]
             [scimmer.mapping.schema-card.single-attrs-section.views :refer [singles-section]]
             [scimmer.mapping.schema-card.object-attrs-section.views :refer [objects-section]]
             [scimmer.mapping.schema-card.array-attrs-section.views :refer [arrays-section]]
             [scimmer.mapping.schema-card.top-actions.views :refer [top-actions]]
             [scimmer.mapping.schema-card.footer.views :refer [footer]]
             [scimmer.mapping.schema-card.extensions.views :refer [extensions]]
+            [scimmer.mapping.schema-card.header.views :refer [header]]
             [scimmer.mapping.schema-card.events]
             [scimmer.mapping.schema-card.subs]))
 
+(defn schema-id []
+  (let [schema @(rf/subscribe [:mapping/schema])]
+    [:div {:class (<class stl/schema-id)}
+     [:div {:class (<class stl/schema-id-lbl)} "ID"]
+     [:div {:class (<class stl/schema-id-val)} (.toString (:id schema))]]))
+
 (defn schema-card []
-  (let [schema      @(rf/subscribe [:mapping/schema]) 
-        schemas     @(rf/subscribe [:mapping/schemas])
-        set-attr    #(rf/dispatch [:mapping/>set-attr %1 %2])
+  (let [set-attr    #(rf/dispatch [:mapping/>set-attr %1 %2])
         remove-attr #(rf/dispatch [:mapping/>remove-attr %1])]
     [card {:class (<class stl/schema-card)}
-     [header
-      (when schema
-        [:> Select {:placeholder "Select a schema"
-                    :options     (or schemas [])
-                    :value-label (when schema
-                                   (r/as-element
-                                    [:div {:class (<class stl/search-input)}
-                                     (:name schema)]))
-                    :value-key (:id schema)
-                    :on-change   #(rf/dispatch [:mapping/>load-schema! (-> % .-option .-id)])
-                    :plain       true}
-         (fn [schema-item]
-           (r/as-element
-            [:div {:class (<class stl/search-item)}
-             (aget schema-item "name")]))])]
+     [header]
+     [schema-id]
      [top-actions]
      [:div {:class (<class stl/body)}
       [singles-section {:set-attr set-attr :remove-attr remove-attr}]

@@ -21,12 +21,14 @@
 
 (defn header []
   {:background              (:grey-1 colors)
-   :display                 "flex"
-   :justify-content         "center"
-   :align-items             "center"
    :border-top-left-radius  (sizes 1)
    :border-top-right-radius (sizes 1)
-   :padding                 (sizes 2)})
+   :padding                 (str "0" (sizes 2))})
+
+(defn header-container []
+  {:display         "flex"
+   :justify-content "center"
+   :align-items     "center"})
 
 (defn body []
   {:flex           1
@@ -41,5 +43,4 @@
    :display        "flex"
    :flex-direction "column"
    :background     "#fff"})
-
 

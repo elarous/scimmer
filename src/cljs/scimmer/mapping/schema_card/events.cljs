@@ -1,11 +1,7 @@
 (ns scimmer.mapping.schema-card.events
   (:require
    [re-frame.core :as rf]
-   [ajax.core :as ajax]
-   [reitit.frontend.easy :as rfe]
-   [reitit.frontend.controllers :as rfc]
-   [scimmer.app-db :as app-db]
-   [scimmer.services.mapping :refer [build-resource]]))
+   [ajax.core :as ajax]))
 
 (defn unindex [m]
   (->> (vals m)
@@ -54,11 +50,12 @@
                    :on-failure      [:mapping/>reject-save]
                    :params          new-schema}})))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  :mapping/>confirm-save
- (fn [db _]
+ (fn [{db :db} _]
    (js/console.log "Saving schema succeeded!")
-   db))
+   {:db       (assoc db :schema-saved? true)
+    :dispatch [:mapping/>refresh-schemas!]}))
 
 (rf/reg-event-db
  :mapping/>reject-save
@@ -66,5 +63,29 @@
    (js/console.error "Saving schema failed!")
    db))
 
+(rf/reg-event-fx
+ :mapping/>remove
+ (fn [{db :db} _]
+   (let [id (get-in db [:schema :id])]
+     {:http-xhrio {:method          :delete
+                   :uri             (str "http://localhost:3003/api/schemas/" id)
+                   :timeout         8000
+                   :format          (ajax/transit-request-format)
+                   :response-format (ajax/transit-response-format)
+                   :on-success      [:mapping/>confirm-remove]
+                   :on-failure      [:mapping/>reject-remove]}})))
 
+(rf/reg-event-fx
+ :mapping/>confirm-remove
+ (fn [{db :db} _]
+   (js/console.log "Removed")
+   {:db db
+    :dispatch [:mapping/>load-schemas!]}))
+
+
+(rf/reg-event-fx
+ :mapping/>reject-remove
+ (fn [{db :db} _]
+   (js/console.log "Not Removed")
+   {:db db}))
 

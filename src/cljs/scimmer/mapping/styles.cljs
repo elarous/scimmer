@@ -8,7 +8,8 @@
                       :size   (sizes 2)
                       :height (sizes 2)}}
    :formField {:border {:position "none"}}
-   :select    {:background (:grey-2 colors)}})
+   :select    {:background (:grey-2 colors)
+               :control    {:extend {:width (sizes 50)}}}})
 
 (defn container []
   {:padding  (sizes 3)

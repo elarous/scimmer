@@ -169,6 +169,12 @@
             (h/merge-where [:not [:in :id kept-sub-items-ids]]))
         query))))
 
+(defn delete-schema-query
+  "query to delete a schema"
+  [id]
+  (-> (h/delete-from :schemas)
+      (h/where [:= :id id])))
+
 ;; end queries
 
 (defn- save-single-attrs! [schema-id single-attrs & {:keys [extension?]}]
@@ -324,6 +330,9 @@
         extensions (find-extensions! schema-id)]
     (assoc schema :extensions extensions)))
 
+(defn delete-schema![id]
+  (exec! (delete-schema-query id)))
+
 ;; service functions
 
 (defn get-all [_request]
@@ -335,8 +344,12 @@
 
 (defn save-schema [request]
   (let [schema  (:body-params request)]
-    (tap> schema)
     (upsert-schema! schema)))
+
+
+(defn remove-schema [request]
+  (let [id (get-in request [:path-params :id])]
+    (delete-schema! (java.util.UUID/fromString id))))
 
 ;;
 

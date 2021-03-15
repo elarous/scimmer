@@ -1,20 +1,20 @@
 (ns scimmer.routes.services
   (:require
-    [reitit.swagger :as swagger]
-    [reitit.swagger-ui :as swagger-ui]
-    [reitit.ring.coercion :as coercion]
-    [reitit.coercion.spec :as spec-coercion]
-    [reitit.ring.middleware.muuntaja :as muuntaja]
-    [reitit.ring.middleware.multipart :as multipart]
-    [reitit.ring.middleware.parameters :as parameters]
-    [scimmer.middleware.formats :as formats]
-    [ring.util.http-response :refer :all]
-    [clojure.tools.logging :as log]
-    [clojure.java.io :as io]
-    [scimmer.services.users :as users]
-    [scimmer.services.schemas :as schemas]
-    [scimmer.services.transform :as transform]
-    [reitit.core :as r]))
+   [reitit.swagger :as swagger]
+   [reitit.swagger-ui :as swagger-ui]
+   [reitit.ring.coercion :as coercion]
+   [reitit.coercion.spec :as spec-coercion]
+   [reitit.ring.middleware.muuntaja :as muuntaja]
+   [reitit.ring.middleware.multipart :as multipart]
+   [reitit.ring.middleware.parameters :as parameters]
+   [scimmer.middleware.formats :as formats]
+   [ring.util.http-response :refer :all]
+   [clojure.tools.logging :as log]
+   [clojure.java.io :as io]
+   [scimmer.services.users :as users]
+   [scimmer.services.schemas :as schemas]
+   [scimmer.services.transform :as transform]
+   [reitit.core :as r]))
 
 (defn ping-handler [request]
   (ok {:message "this is crazy ping handler"}))
@@ -61,7 +61,9 @@
     ["/schemas/:id" {:get  (fn [req]
                              (ok (schemas/get-schema req)))
                      :post (fn [req]
-                             (ok (schemas/save-schema req)))}]]
+                             (ok (schemas/save-schema req)))
+                     :delete (fn [req]
+                               (ok (schemas/remove-schema req)))}]]
 
    ["/scim"
     ["/v2"
