@@ -83,7 +83,7 @@
   (testing "Entities -> Resource -> Entities"
     (let [original-entities
           {:user
-           {:email                "oussama+manager@javelo.Io",
+           {:email                "oussama+manager@company.Io",
             :active               true
             :name                 "Oussama+Manager",
             :formatted_name       "OussAMA El arBaOui"

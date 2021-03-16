@@ -58,7 +58,7 @@
 
   (def entities
     {:user
-     {:email                  "oussama+manager@javelo.Io",
+     {:email                  "oussama+manager@company.Io",
       :email_personal         "mypersonal-email@google.com"
       :deleted_at             nil,
       :name                   "Oussama+Manager",

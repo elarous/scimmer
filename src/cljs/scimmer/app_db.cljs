@@ -26,7 +26,7 @@
                     :organization   "Google. Inc"
                     :employeeNumber "003FTDH2"
                     :manager        {:value "0F2342SLDJF23"}}
-                   :urn:ietf:params:scim:schemas:extension:javelo:2.0:User
+                   :urn:ietf:params:scim:schemas:extension:company:2.0:User
                    {:managerUserName   "manager@manager.com"
                     :status            "on going"
                     :grade             "leader"

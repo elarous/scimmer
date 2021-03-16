@@ -42,7 +42,7 @@
              (update :extensions unindex)
              (update :extensions (fn [exts] (map #(update % :attrs unindex) exts))))]
      {:http-xhrio {:method          :post
-                   :uri             (str "http://localhost:3003/api/schemas/" (:id new-schema))
+                   :uri             (str "/api/schemas/" (:id new-schema))
                    :timeout         8000
                    :format          (ajax/transit-request-format)
                    :response-format (ajax/transit-response-format)
@@ -68,7 +68,7 @@
  (fn [{db :db} _]
    (let [id (get-in db [:schema :id])]
      {:http-xhrio {:method          :delete
-                   :uri             (str "http://localhost:3003/api/schemas/" id)
+                   :uri             (str "/api/schemas/" id)
                    :timeout         8000
                    :format          (ajax/transit-request-format)
                    :response-format (ajax/transit-response-format)

@@ -19,7 +19,7 @@
   (let [schema @(rf/subscribe [:mapping/schema])]
     [:div {:class (<class stl/schema-id)}
      [:div {:class (<class stl/schema-id-lbl)} "ID"]
-     [:div {:class (<class stl/schema-id-val)} (.toString (:id schema))]]))
+     [:div {:class (<class stl/schema-id-val)} (when (:id schema) (.toString (:id schema)))]]))
 
 (defn schema-card []
   (let [set-attr    #(rf/dispatch [:mapping/>set-attr %1 %2])

@@ -20,7 +20,7 @@
  :mapping/>load-schemas!
  (fn [_ _]
    {:http-xhrio {:method          :get
-                 :uri             "http://localhost:3003/api/schemas"
+                 :uri             "/api/schemas"
                  :timeout         8000
                  :response-format (ajax/transit-response-format)
                  :on-success      [:mapping/>confirm-load-schemas]
@@ -42,7 +42,7 @@
  :mapping/>refresh-schemas!
  (fn [_ _]
    {:http-xhrio {:method          :get
-                 :uri             "http://localhost:3003/api/schemas"
+                 :uri             "/api/schemas"
                  :timeout         8000
                  :response-format (ajax/transit-response-format)
                  :on-success      [:mapping/>confirm-refresh-schemas]
@@ -52,7 +52,7 @@
 (rf/reg-event-fx
  :mapping/>confirm-refresh-schemas
  (fn [{db :db} [_ schemas]]
-   {:db       (assoc db :schemas schemas)}))
+   {:db (assoc db :schemas schemas)}))
 
 (rf/reg-event-db
  :mapping/>reject-refresh-schemas
@@ -65,7 +65,7 @@
  :mapping/>load-schema!
  (fn [_ [_ id]]
    {:http-xhrio {:method          :get
-                 :uri             (str "http://localhost:3003/api/schemas/" id)
+                 :uri             (str "/api/schemas/" id)
                  :timeout         8000
                  :response-format (ajax/transit-response-format)
                  :on-success      [:mapping/>confirm-load-schema]
@@ -103,8 +103,8 @@
                     index-by-uuid)
 
          schema (-> resp
-                           (assoc :attrs attrs)
-                           (assoc :extensions extensions))]
+                    (assoc :attrs attrs)
+                    (assoc :extensions extensions))]
      (js/console.log schema)
      (assoc db :schema schema))))
 
