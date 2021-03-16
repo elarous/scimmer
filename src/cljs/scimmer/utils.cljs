@@ -13,7 +13,7 @@
 
 (comment
   (def my-fn (debounce #(println "hi" %) #(println "Finished") 2000))
-  (my-fn "Oussama"))
+  (my-fn "something"))
 
 
 

@@ -58,9 +58,9 @@
            :externalId   "8a61fbf4-543c-4ed2-94a4-7838d6ba8ef"
            :userName     "karim"
            :locale       "en"
-           :name         {:familyName "El Arbaoui"
-                          :givenName  "Oussama"
-                          :formatted  "Oussama-EL-Arbaoui"}
+           :name         {:familyName "Smith"
+                          :givenName  "John"
+                          :formatted  "John Smith"}
            :displayName  "Kamaro"
            :emails       [{:value "work@work.com" :type "work"}
                           {:value "personal@personal.com" :type "personal"}]
@@ -83,16 +83,16 @@
   (testing "Entities -> Resource -> Entities"
     (let [original-entities
           {:user
-           {:email                "oussama+manager@company.Io",
+           {:email                "john+manager@company.Io",
             :active               true
-            :name                 "Oussama+Manager",
-            :formatted_name       "OussAMA El arBaOui"
+            :name                 "john+Manager",
+            :formatted_name       "JoHn SmITh"
             :uuid                 "1234-1234-1234"
             :source_id            "EBD23423423"
-            :last_name            "el arbaoui",
-            :full_name            "Oussama El ARbaoui"
+            :last_name            "Smith",
+            :full_name            "John Smith"
             :locale               "en"
-            :user_name            "oussos"
+            :user_name            "Kamaro"
             :manager_display_name "karimos"
             :manager_uuid         "1234-1234-1234-1234"
             :job                  "Engineer"

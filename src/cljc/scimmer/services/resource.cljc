@@ -58,11 +58,11 @@
 
   (def entities
     {:user
-     {:email                  "oussama+manager@company.Io",
+     {:email                  "john+manager@company.Io",
       :email_personal         "mypersonal-email@google.com"
       :deleted_at             nil,
-      :name                   "Oussama+Manager",
-      :formatted_name         "OussAMA El arBaOui"
+      :name                   "John+Manager",
+      :formatted_name         "JohN Smith"
       :invitation_accepted_at "2019-11-21T14:48:12.526+01:00",
       :avatar_urls            {},
       :never_signed_in        false,
@@ -71,10 +71,10 @@
       :id                     1659,
       :uuid                   "1234-1234-1234"
       :source_id              "EBD23423423"
-      :last_name              "el arbaoui",
+      :last_name              "Smith"
       :current_hired_on       nil,
       :company_manager        true,
-      :full_name              "Oussama El ARbaoui"
+      :full_name              "John Smith"
       :locale                 "en"
       :manager_username       "karimos@karimos.com"
       :job_description        ""}

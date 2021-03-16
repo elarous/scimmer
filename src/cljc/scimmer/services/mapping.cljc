@@ -109,9 +109,9 @@
      :externalId   "8a61fbf4-543c-4ed2-94a4-74838d6ba8ef"
      :userName     "karim"
      :locale       "en"
-     :name         {:familyName "El Arbaoui"
-                    :givenName  "Oussama"
-                    :formatted  "Oussama-EL-Arbaoui"}
+     :name         {:familyName "Smith"
+                    :givenName  "John"
+                    :formatted  "John Smith"}
      :displayName  "Kamaro"
      :emails       [#_{:value "work@work.com" :type "work" :primary true}
                     {:value "another@another.com" :type "another"}

@@ -91,9 +91,9 @@
    :externalId   "8a61fbf4-543c-4ed2-94a4-7838d6ba8ef"
    :userName     "karim"
    :locale       "en"
-   :name         {:familyName "El Arbaoui"
-                  :givenName  "Oussama"
-                  :formatted  "Oussama-EL-Arbaoui"}
+   :name         {:familyName "Smith"
+                  :givenName  "John"
+                  :formatted  "John Smith"}
    :displayName  "Kamaro"
    :emails       [{:value "work@work.com" :type "work"}
                   {:value "personal@personal.com" :type "personal"}]
@@ -117,9 +117,9 @@
     :user_name "karim",
     :mobile_phone "000000"},
    :profile
-   {:first_name "Oussama",
+   {:first_name "John",
     :organization "Google. Inc",
-    :last_name "El Arbaoui"}})
+    :last_name "Smith"}})
 
 (deftest resource-to-entities
   (jdbc/with-transaction [t-conn *db* {:rollback-only true}]

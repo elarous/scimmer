@@ -11,9 +11,9 @@
                    :externalId   "8a61fbf4-543c-4ed2-94a4-74838d6ba8ef"
                    :userName     "karim"
                    :locale       "en"
-                   :name         {:familyName "El Arbaoui"
-                                  :givenName  "Oussama"
-                                  :formatted  "Oussama-EL-Arbaoui"}
+                   :name         {:familyName "Smith"
+                                  :givenName  "John"
+                                  :formatted  "John Smith"}
                    :displayName  "Kamaro"
                    :emails       [{:value "work@work.com" :type "work" :primary true}
                                   {:value "mobile@mobile.com" :type "mobile"}]
@@ -36,24 +36,24 @@
 (comment
   (def schema ;; Reference of the map under :schema in the state
     {#uuid "0ea136ad-061d-45f1-8d92-db5627a156f2"
-     {:type      :single
-      :name      "id"
-      :mapped-to "uuid"
-      :collection     "user"}
+     {:type       :single
+      :name       "id"
+      :mapped-to  "uuid"
+      :collection "user"}
      #uuid "aaaaaaa-061d-45f1-8d92-db5627a156f2"
      {:type      :object
       :name      "name"
       :sub-attrs {#uuid "459e1f73-4356-4422-b60b-6f006908daa6"
-                  {:name      "familyName"
-                   :mapped-to "last_name"
-                   :collection     "user"}}}
+                  {:name       "familyName"
+                   :mapped-to  "last_name"
+                   :collection "user"}}}
      #uuid "bbbabbb-061d-45f1-8d92-db5627a156f2"
      {:type      :array
       :name      "phoneNumbers"
       :sub-items {#uuid "de72b3bd-4ce3-4ea0-b90b-337d4fbebc5f"
-                  {:mapped-to "mobile_phone"
-                   :type      "mobile"
-                   :collection     "user"}}}}))
+                  {:mapped-to  "mobile_phone"
+                   :type       "mobile"
+                   :collection "user"}}}}))
 
 
 
