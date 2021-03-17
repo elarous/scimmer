@@ -16,7 +16,7 @@ jobs:
     - name: Install dependencies
       run: lein deps
     - name: Launch database for tests
-      run: docker-compose up
+      run: docker-compose up -d
     - name: Run tests
       run: lein test 
     - name: Shutdown the test database
