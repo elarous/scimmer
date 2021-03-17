@@ -72,4 +72,6 @@
       (migrations/migrate args (select-keys env [:database-url]))
       (System/exit 0))
     :else
-    (start-app args)))
+    (do
+      (migrations/migrate ["migrate"] (select-keys env [:database-url]))
+      (start-app args))))
