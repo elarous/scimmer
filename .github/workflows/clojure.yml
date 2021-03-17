@@ -15,8 +15,12 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install dependencies
       run: lein deps
+    - name: Launch database for tests
+      run: docker-compose up
     - name: Run tests
       run: lein test 
+    - name: Shutdown the test database
+      run: docker-compose down
     - name: Create an uberjar
       run: lein uberjar
   deploy:
