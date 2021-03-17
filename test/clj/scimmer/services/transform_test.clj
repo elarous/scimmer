@@ -1,4 +1,4 @@
-(ns scimmer.transform-test
+(ns scimmer.services.transform-test
   (:require
    [clojure.test :refer [use-fixtures deftest testing is]]
    [ring.mock.request :as req]

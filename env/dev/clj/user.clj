@@ -15,12 +15,12 @@
 (alter-var-root #'s/*explain-out* (constantly expound/printer))
 
 (add-tap (bound-fn* clojure.pprint/pprint))
-(add-tap (reveal/ui))
 
 (defn start
   "Starts application.
   You'll usually want to run this on startup."
   []
+  (add-tap (reveal/ui))
   (mount/start-without #'scimmer.core/repl-server))
 
 (defn stop
