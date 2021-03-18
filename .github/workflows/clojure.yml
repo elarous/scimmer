@@ -38,7 +38,5 @@ jobs:
       uses: docker/build-push-action@v2.3.0
       with:
         push: true
-        tags:
-        - elarouss/scimmer:${{steps.get_version.outputs.VERSION}}
-        - elarouss/scimmer:latest
+        tags: elarouss/scimmer:${{steps.get_version.outputs.VERSION}},elarouss/scimmer:latest
 
