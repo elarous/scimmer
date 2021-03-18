@@ -28,8 +28,6 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    - name: Create an uberjar
-      run: lein uberjar
     - name: Login to DockerHub
       uses: docker/login-action@v1 
       with:
