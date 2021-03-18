@@ -1,0 +1,26 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: lein deps
+    - name: Launch database for tests
+      run: docker-compose up -d
+    - name: Run tests
+      run: lein test 
+    - name: Shutdown the test database
+      run: docker-compose down
+
