@@ -35,10 +35,10 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Build and push Docker images
-      # You may pin to the exact commit or the version.
-      # uses: docker/build-push-action@9379083e426e2e84abb80c8c091f5cdeb7d3fd7a
       uses: docker/build-push-action@v2.3.0
       with:
         push: true
-        tags: elarouss/scimmer:${{steps.get_version.outputs.VERSION}}
+        tags:
+        - elarouss/scimmer:${{steps.get_version.outputs.VERSION}}
+        - elarouss/scimmer:latest
 
