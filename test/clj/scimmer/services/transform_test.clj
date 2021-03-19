@@ -125,7 +125,7 @@
   (jdbc/with-transaction [t-conn *db* {:rollback-only true}]
     (schs/upsert-schema! schema)
     (testing "Resource to entities for SCIM PUT"
-      (let [req-body     {:schema-id (:id schema)
+      (let [req-body     {:schemaId (:id schema)
                           :resource  resource}
             response     ((app) (-> (req/request :post "/api/resource_to_entities")
                                     (req/json-body req-body)))
@@ -168,8 +168,8 @@
                                      :path  "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:organization",
                                      :value organization}]}
 
-            req-body     {:schema-id (:id schema)
-                          :patch-req patch-req
+            req-body     {:schemaId (:id schema)
+                          :patchReq patch-req
                           :entities  entities}
             response     ((app) (-> (req/request :post "/api/resource_to_entities")
                                     (req/json-body req-body)))
@@ -194,7 +194,7 @@
           (is organization
               (get-in decoded-resp [:entities :profile :organization])))))
     (testing "Entities to resource for SCIM GET (one)"
-      (let [req-body     {:schema-id (:id schema)
+      (let [req-body     {:schemaId (:id schema)
                           :entities  entities}
             response     ((app) (-> (req/request :post "/api/entities_to_resource")
                                     (req/json-body req-body)))
@@ -219,8 +219,8 @@
           (is (= (get-in entities [:profile :organization])
                  (get-in decoded-resp [:resource :urn:ietf:params:scim:schemas:extension:enterprise:2.0:User  :organization]))))))
     (testing "Entities to resource for SCIM GET (many)"
-      (let [req-body     {:schema-id (:id schema)
-                          :entities-list  [entities]}
+      (let [req-body     {:schemaId (:id schema)
+                          :entitiesList  [entities]}
             response     ((app) (-> (req/request :post "/api/entities_to_resource")
                                     (req/json-body req-body)))
             decoded-resp (m/decode-response-body response)]
