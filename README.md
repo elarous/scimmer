@@ -1,6 +1,6 @@
 # Scimmer
 
-Make SCIM resources mapping to entities easier and painless, by creating schemas and use them selectively.
+Make SCIM resources mapping to entities easier and painless, by creating schemas and using them selectively.
 
 ## how to install
 
