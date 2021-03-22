@@ -9,6 +9,8 @@ Scimmer is shipped as a docker image that you can pull: `elarouss/scimmer:<versi
 
 The container expects `DATABASE_URL` env variable (ex: `DATABASE_URL=postgresql://localhost:5432/postgres?user=postgres&password=`)
 
+The tool's server runs on port `3000`.
+
 ## how to use
 
 ### Create a schema
